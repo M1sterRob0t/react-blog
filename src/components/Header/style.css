@@ -1,0 +1,43 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 80px;
+  background-color: #FFFFFF;
+  padding: 0 22px;
+}
+
+.header__unauth-user {
+  display: flex;
+  justify-content: space-between;
+  column-gap: 19px;
+}
+
+.header__auth-user {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  column-gap: 27px;
+
+  display: none;
+}
+
+.header__sign-up, .header__create-article {
+  color: #52C41A;
+  border-color: #52C41A;
+}
+
+.header__logo-link {
+  color: #000000;
+  text-decoration: none;
+  font-size: 16px;
+}
+
+.header__user-profile {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  column-gap: 13px;
+
+  font-size: 16px;
+}
