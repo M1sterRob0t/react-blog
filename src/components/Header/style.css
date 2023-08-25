@@ -12,6 +12,7 @@
   display: flex;
   justify-content: space-between;
   column-gap: 17px;
+  display: none;
 }
 
 .header__auth-user {
@@ -19,7 +20,7 @@
   justify-content: space-between;
   align-items: center;
   column-gap: 28px;
-  display: none;
+ 
 }
 
 .header__sign-in {

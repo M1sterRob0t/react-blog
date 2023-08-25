@@ -1,6 +1,7 @@
 // import Posts from '../Posts';
+import CreateNewPost from '../CreateNewPost';
 import Header from '../Header';
-import SignUp from '../Modal/SignUp';
+// import SignUp from '../Modal/SignUp';
 // import EditProfile from '../Modal/EditProfile';
 // import SignIn from '../Modal/SignIn';
 
@@ -10,7 +11,7 @@ function App() {
   return (
     <div className="app">
       <Header className="app__header" />
-      <SignUp className="app__modal" />
+      <CreateNewPost className="app__create-new-post" />
     </div>
   );
 }
