@@ -7,9 +7,6 @@
   margin-bottom: 26px;
 }
 
-.app__sign-up {
-  margin-top: 59px;
-  
-  margin-left: auto;
-  margin-right: auto;
+.app__modal{
+  margin: 59px auto;
 }
