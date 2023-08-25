@@ -69,16 +69,11 @@
   height: 40px;
   border-radius: 4px;
   font-size: 16px;
-
-  margin-bottom: 5px;
-}
-
-.modal__submit:last-child {
-  margin-bottom: 0px;
 }
 
 .modal__message {
   text-align: center;
+  margin-top: 5px;
 }
 
 .modal__message-text {
