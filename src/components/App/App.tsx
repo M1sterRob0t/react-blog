@@ -1,5 +1,6 @@
 // import Posts from '../Posts';
-import CreateNewPost from '../CreateNewPost';
+import Post from '../Post';
+// import CreateNewPost from '../CreateNewPost';
 import Header from '../Header';
 // import SignUp from '../Modal/SignUp';
 // import EditProfile from '../Modal/EditProfile';
@@ -10,8 +11,8 @@ import './App.css';
 function App() {
   return (
     <div className="app">
-      <Header className="app__header" />
-      <CreateNewPost className="app__create-new-post" />
+      <Header className="app__header" isUserAuthorized={false} />
+      <Post full />
     </div>
   );
 }

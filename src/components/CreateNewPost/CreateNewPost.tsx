@@ -3,16 +3,17 @@ import { Input, Typography, Button } from 'antd';
 
 interface ICreateNewPostProps {
   className: string;
+  edit?: true;
 }
 const { Title } = Typography;
 
 export default function CreateNewPost(props: ICreateNewPostProps): JSX.Element {
-  const { className } = props;
+  const { className, edit } = props;
 
   return (
     <section className={`${className} create-new-post`}>
       <Title className="create-new-post__title" level={4}>
-        Create new article
+        {edit ? 'Edit article' : 'Create new article'}
       </Title>
       <form className="create-new-post__form">
         <label className="create-new-post__label">
