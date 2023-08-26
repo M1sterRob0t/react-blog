@@ -12,7 +12,7 @@ function App() {
   return (
     <div className="app">
       <Header className="app__header" isUserAuthorized={false} />
-      <Post full />
+      <Post full authorized />
     </div>
   );
 }

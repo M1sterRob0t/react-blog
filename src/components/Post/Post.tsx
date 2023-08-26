@@ -1,17 +1,26 @@
 import './style.css';
 import { HeartOutlined } from '@ant-design/icons';
-import { Tag } from 'antd';
+import { Tag, Button, message, Popconfirm } from 'antd';
 
 import defaultAvatar from './images/default-avatar.png';
 
-/* const { Title } = Typography; */
-
 interface IPostProps {
-  full?: boolean;
+  full?: true;
+  authorized?: true;
 }
 
 export default function Post(props: IPostProps) {
-  const { full } = props;
+  const { full, authorized } = props;
+
+  const onConfirm = (e: React.MouseEvent<HTMLElement> | undefined): void => {
+    console.log(e);
+    message.success('Click on Yes');
+  };
+
+  const onCancel = (e: React.MouseEvent<HTMLElement> | undefined): void => {
+    console.log(e);
+    message.error('Click on No');
+  };
 
   return (
     <article className={`post ${full && 'post--full'}`}>
@@ -25,13 +34,33 @@ export default function Post(props: IPostProps) {
         </span>
       </div>
       <div className="post__info">
-        <div className="post__inner-wrapper">
-          <div className="post__user-name">John Doe</div>
-          <div className="post__date">March 5, 2020 </div>
+        <div className="post__info-container">
+          <div className="post__details">
+            <div className="post__user-name">John Doe</div>
+            <div className="post__date">March 5, 2020 </div>
+          </div>
+          <div className="post__user-avatar">
+            <img src={defaultAvatar} width="46" height="46px" alt="user avatar" />
+          </div>
         </div>
-        <div className="post__user-avatar">
-          <img src={defaultAvatar} width="46" height="46px" alt="user avatar" />
-        </div>
+        {authorized && (
+          <div className="post__info-controls">
+            <Popconfirm
+              className="post__popconfirm"
+              title="Are you sure to delete this article?"
+              onConfirm={onConfirm}
+              onCancel={onCancel}
+              okText="Yes"
+              cancelText="No"
+              placement="rightTop"
+            >
+              <Button className="post__delit-button" danger>
+                Delete
+              </Button>
+            </Popconfirm>
+            <Button className="post__edit-button">Edit</Button>
+          </div>
+        )}
       </div>
       <div className="post__desc">
         <div className="post__tegs-list">

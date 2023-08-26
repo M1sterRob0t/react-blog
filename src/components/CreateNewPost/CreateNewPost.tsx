@@ -8,12 +8,12 @@ interface ICreateNewPostProps {
 const { Title } = Typography;
 
 export default function CreateNewPost(props: ICreateNewPostProps): JSX.Element {
-  const { className, edit } = props;
+  const { className, edit: isEdit } = props;
 
   return (
     <section className={`${className} create-new-post`}>
       <Title className="create-new-post__title" level={4}>
-        {edit ? 'Edit article' : 'Create new article'}
+        {isEdit ? 'Edit article' : 'Create new article'}
       </Title>
       <form className="create-new-post__form">
         <label className="create-new-post__label">

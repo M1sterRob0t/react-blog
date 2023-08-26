@@ -51,18 +51,38 @@
   position: absolute;
   top: 15px;
   right: 15px;
-
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  column-gap: 12px;
 }
 
-.post__inner-wrapper {
+.post__info-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  column-gap: 12px;
+
+  margin-bottom: 25px;
+}
+
+.post__info-controls {
+  display: flex;
+  justify-content: flex-end;
+  column-gap: 10px;
+}
+
+.post__edit-button {
+  width: 65px ;
+  color: #52C41A;
+  border-color: #52C41A;
+}
+
+.post__delit-button {
+  width: 80px ;
+}
+
+.post__details {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex;
 
   text-align: right;
 }
@@ -84,6 +104,7 @@
 }
 
 .post__likes-count {
+  margin-top: 2px;
   font-size: 12px;
 }
 
