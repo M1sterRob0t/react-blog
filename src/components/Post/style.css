@@ -81,8 +81,7 @@
 .post__details {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: flex;
+  align-items: flex-end;
 
   text-align: right;
 }
@@ -107,6 +106,15 @@
   margin-top: 2px;
   font-size: 12px;
 }
+
+.post__likes-icon {
+  cursor: pointer;
+}
+
+.post__likes-icon--clicked {
+  color: #FF0707;
+}
+
 
 /* post--full */
 .post--full {
@@ -164,4 +172,9 @@
   font-size: 15px;
   letter-spacing: 0.05px;
   margin-bottom: 2px;
+}
+
+.post__user-avatar {
+  border-radius: 50%;
+  overflow: hidden;
 }
