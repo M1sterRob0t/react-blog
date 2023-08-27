@@ -12,3 +12,7 @@
   list-style: none;
   margin-bottom: 26px;
 }
+
+.posts__pagination {
+  text-align: center;
+}

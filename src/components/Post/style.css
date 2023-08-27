@@ -19,6 +19,7 @@
   font-size: 13px;
   line-height: 22px;
   color: #404040;
+  overflow-wrap: break-word;
 
   max-width: 675px;
   margin: 0;
@@ -175,6 +176,7 @@
 }
 
 .post__user-avatar {
+  display: flex;
   border-radius: 50%;
   overflow: hidden;
 }

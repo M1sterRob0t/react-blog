@@ -2,7 +2,7 @@ import { HeartOutlined, HeartFilled } from '@ant-design/icons';
 import { Tag, Button, message, Popconfirm } from 'antd';
 import { format } from 'date-fns';
 
-import { TArticle } from '../../types/article';
+import { TArticle } from '../../types/articles';
 import './style.css';
 
 const DATE_FROMAT = 'MMMM 	M, yyy';
@@ -73,7 +73,7 @@ export default function Post(props: IPostProps) {
       </div>
       <div className="post__desc">
         <div className="post__tegs-list">
-          {article.tags.map((tag) => (
+          {article.tagList.map((tag) => (
             <Tag className="post__tegs-item" key={tag.toLowerCase()}>
               {tag}
             </Tag>
