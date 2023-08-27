@@ -1,14 +1,18 @@
-import { Alert, Space } from 'antd';
+import { Space, Typography } from 'antd';
 
-interface IPopupProps {
-  name?: string;
-  message?: string;
-}
+import ErrorImage from './image/sad-cat.png';
 
-function Error({ name = 'Error', message = '' }: IPopupProps): JSX.Element {
+const { Title, Text } = Typography;
+
+function Error(): JSX.Element {
   return (
-    <Space direction="vertical" style={{ width: 500, height: 200, margin: '35vh auto' }}>
-      <Alert type="error" showIcon message={name} description={message} style={{ transform: 'scale(1.4)' }} />
+    <Space direction="vertical" style={{ width: '100%', height: '65vh', textAlign: 'center', marginTop: '200px' }}>
+      <Title level={1} style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-end' }}>
+        <img src={ErrorImage} width="50" height="50" />
+        Oops!
+      </Title>
+      <Text style={{ fontSize: '23px' }}>Sorry, an unexpected error has occured.</Text>
+      <Text style={{ color: 'grey', fontSize: '18px' }}>Not Found</Text>
     </Space>
   );
 }

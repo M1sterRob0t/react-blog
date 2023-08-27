@@ -5,19 +5,20 @@ import { useAppDispatch, useAppSelector } from '../../hooks/hooks';
 import Post from '../Post';
 import Spinner from '../Spinner';
 import { fetchArticle } from '../../state/api-actions';
+import Error from '../Error';
 
 export default function PostFull(): JSX.Element {
   const dispatch = useAppDispatch();
   const article = useAppSelector((state) => state.blog.article);
+  const isLoading = useAppSelector((state) => state.blog.isLoading);
+  const isError = useAppSelector((state) => state.blog.isError);
   const { name } = useParams();
 
   useEffect(() => {
     if (name) dispatch(fetchArticle(name));
   }, [name]);
 
-  if (article === null) {
-    return <Spinner />;
-  }
-
+  if (isError) return <Error />;
+  if (isLoading || !article) return <Spinner />;
   return <Post article={article} full />;
 }

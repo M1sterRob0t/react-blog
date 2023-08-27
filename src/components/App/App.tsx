@@ -27,6 +27,7 @@ function App() {
       <Header className="app__header" isUserAuthorized={false} />
       <Routes>
         <Route path={APIRoute.Root} element={<Posts articles={articles} />} />
+        <Route path={APIRoute.Articles} element={<Posts articles={articles} />} />
         <Route path={APIRoute.Article} element={<PostFull />} />
       </Routes>
     </div>

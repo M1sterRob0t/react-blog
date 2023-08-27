@@ -2,9 +2,11 @@ import { Pagination } from 'antd';
 
 import './style.css';
 import Post from '../Post';
+import Spinner from '../Spinner';
+import Error from '../Error';
 import { TArticle } from '../../types/articles';
 import { POSTS_PER_PAGE, MAX_POSTS } from '../../constants';
-import { useAppDispatch } from '../../hooks/hooks';
+import { useAppDispatch, useAppSelector } from '../../hooks/hooks';
 import { fetchArticles } from '../../state/api-actions';
 
 interface IPostsProps {
@@ -12,18 +14,27 @@ interface IPostsProps {
 }
 
 export default function Posts(props: IPostsProps): JSX.Element {
+  const { articles } = props;
+
+  const isLoading = useAppSelector((state) => state.blog.isLoading);
+  const isError = useAppSelector((state) => state.blog.isError);
   const dispatch = useAppDispatch();
 
-  const { articles } = props;
+  if (isError) return <Error />;
+
   return (
     <div className="posts">
-      <ul className="posts__list">
-        {articles.map((article) => (
-          <li className="posts__item" key={article.slug}>
-            <Post article={article} />
-          </li>
-        ))}
-      </ul>
+      {isLoading ? (
+        <Spinner />
+      ) : (
+        <ul className="posts__list">
+          {articles.map((article) => (
+            <li className="posts__item" key={article.slug}>
+              <Post article={article} />
+            </li>
+          ))}
+        </ul>
+      )}
       <Pagination
         className="posts__pagination"
         pageSize={POSTS_PER_PAGE}

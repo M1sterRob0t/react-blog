@@ -6,7 +6,7 @@ function Spinner(): JSX.Element {
   return (
     <div
       style={{
-        height: '85vh',
+        height: '60vh',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',

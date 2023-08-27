@@ -3,7 +3,8 @@ import { TArticle } from './articles';
 export type TBlogState = {
   articles: TArticle[];
   article: TArticle | null;
-  status: 'idle' | 'loading' | 'failed';
+  isLoading: boolean;
+  isError: boolean;
 };
 
 export type TState = {

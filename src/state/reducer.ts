@@ -1,7 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import type { PayloadAction } from '@reduxjs/toolkit';
 
-import { TArticle } from '../types/articles';
 import { TBlogState } from '../types/states';
 
 import { fetchArticles, fetchArticle } from './api-actions';
@@ -9,7 +7,8 @@ import { fetchArticles, fetchArticle } from './api-actions';
 const initialState: TBlogState = {
   article: null,
   articles: [],
-  status: 'idle',
+  isLoading: false,
+  isError: false,
 };
 
 export const blogSlice = createSlice({
@@ -17,35 +16,37 @@ export const blogSlice = createSlice({
   initialState,
 
   reducers: {
-    setArticles: (state: TBlogState, action: PayloadAction<TArticle[]>) => {
-      state.articles = action.payload;
+    clearError: (state: TBlogState) => {
+      state.isError = false;
     },
   },
 
   extraReducers: (builder) => {
     builder
       .addCase(fetchArticles.pending, (state) => {
-        state.status = 'loading';
+        state.isLoading = true;
       })
       .addCase(fetchArticles.fulfilled, (state, action) => {
-        state.status = 'idle';
+        state.isLoading = false;
         state.articles = action.payload;
       })
       .addCase(fetchArticles.rejected, (state) => {
-        state.status = 'failed';
+        state.isLoading = false;
+        state.isError = true;
       })
       .addCase(fetchArticle.pending, (state) => {
-        state.status = 'loading';
+        state.isLoading = true;
       })
       .addCase(fetchArticle.fulfilled, (state, action) => {
-        state.status = 'idle';
+        state.isLoading = false;
         state.article = action.payload;
       })
       .addCase(fetchArticle.rejected, (state) => {
-        state.status = 'failed';
+        state.isLoading = false;
+        state.isError = true;
       });
   },
 });
 
-export const { setArticles } = blogSlice.actions;
+export const { clearError } = blogSlice.actions;
 export default blogSlice.reducer;
