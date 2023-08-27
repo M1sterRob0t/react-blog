@@ -15,15 +15,6 @@ function formatArticles(articles: TArticle[]): TArticle[] {
   return articlesWithFilteredTags;
 }
 
-/* async function getResponse<T>(response: Response): Promise<T> {
-  if (response.status !== 200) {
-    const error = await response.json();
-    throw new Error(`${response.status} ${error.status_message}`);
-  }
-
-  return await response.json();
-} */
-
 export const fetchArticles = createAsyncThunk('blog/fetchArticles', async (page: number) => {
   const offset = page === 1 ? 0 : page * POSTS_PER_PAGE - POSTS_PER_PAGE;
 
@@ -35,7 +26,7 @@ export const fetchArticles = createAsyncThunk('blog/fetchArticles', async (page:
 });
 
 export const fetchArticle = createAsyncThunk('blog/fetchArticle', async (name: string) => {
-  const response = await fetch(`${BASE_URL}${APIRoute.Articles}/${name}as`);
+  const response = await fetch(`${BASE_URL}${APIRoute.Articles}/${name}`);
   const data: TArticleServerResponse = await response.json();
   const article: TArticle = formatArticles([data.article])[0];
 

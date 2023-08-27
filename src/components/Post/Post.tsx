@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
 import { HeartOutlined, HeartFilled } from '@ant-design/icons';
 import { Tag, Button, message, Popconfirm } from 'antd';
 import { format } from 'date-fns';
@@ -85,7 +86,7 @@ export default function Post(props: IPostProps) {
         </div>
         <p className="post__desc-text">{article.description}</p>
       </div>
-      {full && <div className="post__body">{article.body}</div>}
+      {full && <div className="post__body">{<ReactMarkdown>{article.body}</ReactMarkdown>}</div>}
     </article>
   );
 }
