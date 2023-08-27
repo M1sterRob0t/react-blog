@@ -1,0 +1,18 @@
+.posts {
+  width: 938px;
+  margin: 0 auto;
+}
+
+.posts__list {
+  padding: 0;
+  margin: 0;
+}
+
+.posts__item {
+  list-style: none;
+  margin-bottom: 26px;
+}
+
+.posts__pagination {
+  text-align: center;
+}

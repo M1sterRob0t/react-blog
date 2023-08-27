@@ -1,0 +1,16 @@
+.app {
+  /* width: 1440px; */
+  margin: 0 auto;
+}
+
+.app__header {
+  margin-bottom: 26px;
+}
+
+.app__modal{
+  margin: 59px auto;
+}
+
+.app__create-new-post{
+  margin: 35px auto;
+}

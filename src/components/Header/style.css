@@ -1,0 +1,85 @@
+.header {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 80px;
+  background-color: #FFFFFF;
+  padding: 0 22px 0px 22px;
+}
+
+.header__unauth-user {
+  display: flex;
+  justify-content: space-between;
+  column-gap: 17px;
+}
+
+.header__auth-user {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  column-gap: 28px;
+ 
+}
+
+.header__controls {
+  margin-bottom: 2px;
+}
+
+.header__sign-in {
+  height: 50px;
+  width: 110px;
+
+  font-size: 19px;
+}
+
+.header__sign-up {
+  height: 50px;
+  width: 110px;
+
+  color: #52C41A;
+  border-color: #52C41A;
+
+  font-size: 19px;
+}
+
+.header__logo-link {
+  display: block;
+  color: #000000;
+  text-decoration: none;
+  font-size: 19px;
+  letter-spacing: 0.5px;
+
+  margin-bottom: 10px;
+}
+
+.header__logout {
+  width: 109px;
+  height: 51px;
+  font-size: 19px;
+}
+
+.header__user-profile {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  column-gap: 12px;
+
+  font-size: 19px;
+}
+
+.header__user-avatar {
+  margin-top: 10px;
+}
+
+.header__create-article {
+  height: 31px;
+  width: 112px;
+  padding: 0;
+
+  color: #52C41A;
+  border-color: #52C41A;
+
+  font-size: 16px;
+}
+  
