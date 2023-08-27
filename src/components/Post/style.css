@@ -6,10 +6,15 @@
   background-color: #ffffff;
 }
 
+.post__header {
+  max-width: 730px;
+}
+
 .post__title {
   color: #1890ff;
   font-size: 22px;
   font-weight: 400;
+  text-decoration: none;
 
   margin: 0;
   margin-bottom: 3px;
@@ -130,6 +135,8 @@
 
 .post__body {
   color: #404040;
+  
+  margin-top: 25px;
 }
 
 .post__body-main-title {

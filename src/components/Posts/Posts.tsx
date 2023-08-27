@@ -19,7 +19,7 @@ export default function Posts(props: IPostsProps): JSX.Element {
     <div className="posts">
       <ul className="posts__list">
         {articles.map((article) => (
-          <li className="posts__item" key={article.id}>
+          <li className="posts__item" key={article.slug}>
             <Post article={article} />
           </li>
         ))}

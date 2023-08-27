@@ -1,9 +1,11 @@
+import { Link } from 'react-router-dom';
 import { HeartOutlined, HeartFilled } from '@ant-design/icons';
 import { Tag, Button, message, Popconfirm } from 'antd';
 import { format } from 'date-fns';
 
 import { TArticle } from '../../types/articles';
 import './style.css';
+import { APIRoute } from '../../constants';
 
 const DATE_FROMAT = 'MMMM 	M, yyy';
 
@@ -30,7 +32,9 @@ export default function Post(props: IPostProps) {
   return (
     <article className={`post ${full && 'post--full'}`}>
       <div className="post__header">
-        <h2 className="post__title">{article.title}</h2>
+        <Link to={`${APIRoute.Articles}/${article.slug}`} className="post__title">
+          {article.title}
+        </Link>
         <span className="post__likes">
           <span className="post__likes-icon-wrapper">
             {article.favorited ? (

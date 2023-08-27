@@ -1,12 +1,14 @@
 import { useEffect } from 'react';
+import { Route, Routes } from 'react-router-dom';
 
 import Header from '../Header';
 import Posts from '../Posts';
 import { fetchArticles } from '../../state/api-actions';
 import { useAppSelector, useAppDispatch } from '../../hooks/hooks';
 import './App.css';
+import { APIRoute } from '../../constants';
+import PostFull from '../PostFull';
 
-// import Post from '../Post';
 // import CreateNewPost from '../CreateNewPost';
 // import SignUp from '../Modal/SignUp';
 // import EditProfile from '../Modal/EditProfile';
@@ -23,7 +25,10 @@ function App() {
   return (
     <div className="app">
       <Header className="app__header" isUserAuthorized={false} />
-      <Posts articles={articles} />
+      <Routes>
+        <Route path={APIRoute.Root} element={<Posts articles={articles} />} />
+        <Route path={APIRoute.Article} element={<PostFull />} />
+      </Routes>
     </div>
   );
 }

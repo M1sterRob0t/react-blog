@@ -1,7 +1,11 @@
+import { Link } from 'react-router-dom';
 import './style.css';
 import { Button } from 'antd';
 
+import { APIRoute } from '../../constants';
+
 import defaultAvatar from './images/default-avatar.png';
+
 interface IHeaderProps {
   className: string;
   isUserAuthorized: boolean;
@@ -13,9 +17,9 @@ export default function Header(props: IHeaderProps): JSX.Element {
   return (
     <header className={`${className} header`}>
       <div className="header__logo">
-        <a className="header__logo-link" href="#">
+        <Link className="header__logo-link" to={APIRoute.Root}>
           Realworld Blog
-        </a>
+        </Link>
       </div>
       <div className="header__controls">
         {isUserAuthorized ? (

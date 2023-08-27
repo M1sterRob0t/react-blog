@@ -4,9 +4,10 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import { TArticle } from '../types/articles';
 import { TBlogState } from '../types/states';
 
-import { fetchArticles } from './api-actions';
+import { fetchArticles, fetchArticle } from './api-actions';
 
 const initialState: TBlogState = {
+  article: null,
   articles: [],
   status: 'idle',
 };
@@ -31,6 +32,16 @@ export const blogSlice = createSlice({
         state.articles = action.payload;
       })
       .addCase(fetchArticles.rejected, (state) => {
+        state.status = 'failed';
+      })
+      .addCase(fetchArticle.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(fetchArticle.fulfilled, (state, action) => {
+        state.status = 'idle';
+        state.article = action.payload;
+      })
+      .addCase(fetchArticle.rejected, (state) => {
         state.status = 'failed';
       });
   },
