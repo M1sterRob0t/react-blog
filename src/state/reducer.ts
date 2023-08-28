@@ -22,8 +22,9 @@ export const blogSlice = createSlice({
   },
 
   extraReducers: (builder) => {
-    builder
+    builder // fetchArticles
       .addCase(fetchArticles.pending, (state) => {
+        state.isError = false;
         state.isLoading = true;
       })
       .addCase(fetchArticles.fulfilled, (state, action) => {
@@ -33,8 +34,9 @@ export const blogSlice = createSlice({
       .addCase(fetchArticles.rejected, (state) => {
         state.isLoading = false;
         state.isError = true;
-      })
+      }) // fetchArticle
       .addCase(fetchArticle.pending, (state) => {
+        state.isError = false;
         state.isLoading = true;
       })
       .addCase(fetchArticle.fulfilled, (state, action) => {

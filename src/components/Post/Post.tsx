@@ -8,7 +8,7 @@ import { TArticle } from '../../types/articles';
 import './style.css';
 import { APIRoute } from '../../constants';
 
-const DATE_FROMAT = 'MMMM 	M, yyy';
+const DATE_FROMAT = 'MMMM 	d, yyy';
 
 interface IPostProps {
   full?: true;

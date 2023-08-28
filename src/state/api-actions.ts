@@ -26,7 +26,7 @@ export const fetchArticles = createAsyncThunk('blog/fetchArticles', async (page:
 });
 
 export const fetchArticle = createAsyncThunk('blog/fetchArticle', async (name: string) => {
-  const response = await fetch(`${BASE_URL}${APIRoute.Articles}/${name}`);
+  const response = await fetch(`${BASE_URL}${APIRoute.Articles}asdds/${name}`);
   const data: TArticleServerResponse = await response.json();
   const article: TArticle = formatArticles([data.article])[0];
 

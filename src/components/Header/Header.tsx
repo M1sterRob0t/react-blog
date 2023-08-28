@@ -3,8 +3,6 @@ import './style.css';
 import { Button } from 'antd';
 
 import { APIRoute } from '../../constants';
-import { useAppDispatch } from '../../hooks/hooks';
-import { clearError } from '../../state/reducer';
 
 import defaultAvatar from './images/default-avatar.png';
 
@@ -15,12 +13,11 @@ interface IHeaderProps {
 
 export default function Header(props: IHeaderProps): JSX.Element {
   const { className, isUserAuthorized } = props;
-  const dispatch = useAppDispatch();
 
   return (
     <header className={`${className} header`}>
       <div className="header__logo">
-        <Link className="header__logo-link" to={APIRoute.Articles} onClick={() => dispatch(clearError())}>
+        <Link className="header__logo-link" to={APIRoute.Articles}>
           Realworld Blog
         </Link>
       </div>
