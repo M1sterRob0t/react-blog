@@ -1,11 +1,14 @@
-import { FormEvent } from 'react';
+import { FormEvent, useState } from 'react';
+import { Navigate } from 'react-router-dom';
 import { Input, Typography, Button } from 'antd';
 
+import Spinner from '../../Spinner';
 import { postNewUser } from '../../../state/api-actions';
-import { TNewUser } from '../../../types/users';
-import { useAppDispatch } from '../../../hooks/hooks';
-
+import type { TNewUser, TNewUserRequest } from '../../../types/users';
+import { useAppDispatch, useAppSelector } from '../../../hooks/hooks';
 import '../style.css';
+import { getUserInfo } from '../../../state/userInfo';
+import { AppRoute } from '../../../constants';
 
 const INPUT_INVALID_CLASS = 'modal__input--invalid';
 const SignUpForm = {
@@ -16,6 +19,12 @@ const SignUpForm = {
   Agreement: 'agreement',
 };
 
+const formInfoDefault: TNewUser = {
+  username: '',
+  email: '',
+  password: '',
+};
+
 interface ISignUpProps {
   className: string;
 }
@@ -24,6 +33,10 @@ const { Title } = Typography;
 export default function SignUp(props: ISignUpProps): JSX.Element {
   const { className } = props;
   const dispatch = useAppDispatch();
+  const error = useAppSelector((state) => state.blog.error);
+  const isLoading = useAppSelector((state) => state.blog.isLoading);
+  const [formInfo, setFormInfo] = useState(formInfoDefault);
+  const isAuthorized = getUserInfo();
 
   function formSubmitHandler(evt: FormEvent<HTMLFormElement>): void {
     evt.preventDefault();
@@ -41,9 +54,10 @@ export default function SignUp(props: ISignUpProps): JSX.Element {
       return;
     }
 
-    const newUser: TNewUser = { user: { username, email, password } };
+    const newUser: TNewUserRequest = { user: { username, email, password } };
 
     console.log(newUser);
+    setFormInfo({ username, email, password });
     dispatch(postNewUser(newUser));
   }
 
@@ -57,7 +71,10 @@ export default function SignUp(props: ISignUpProps): JSX.Element {
     const input = evt.target as HTMLInputElement;
     if (input.validity.valid) input.classList.remove(INPUT_INVALID_CLASS);
   }
-
+  if (isAuthorized) return <Navigate to={AppRoute.Articles} />;
+  if (isLoading) return <Spinner />;
+  // eslint-disable-next-line no-debugger
+  debugger;
   return (
     <section className={`${className} modal`}>
       <Title level={4} className="modal__title">
@@ -67,7 +84,7 @@ export default function SignUp(props: ISignUpProps): JSX.Element {
         <label className="modal__label">
           Username
           <Input
-            className="modal__input"
+            className={`modal__input ${error && error.username ? INPUT_INVALID_CLASS : ''}`}
             placeholder="Username"
             name={SignUpForm.Username}
             type="text"
@@ -76,28 +93,32 @@ export default function SignUp(props: ISignUpProps): JSX.Element {
             required
             onInvalid={inputInvalidHandler}
             onChange={inputChnageHandler}
+            defaultValue={formInfo.username}
           />
-          <span className="modal__invalid-message">Your name needs to be from 3 to 20 characters.</span>
+          <span className="modal__invalid-message">
+            Username {error?.username || 'needs to be from 3 to 20 characters.'}
+          </span>
         </label>
 
         <label className="modal__label">
           Email address
           <Input
-            className="modal__input"
+            className={`modal__input ${error && error.email ? INPUT_INVALID_CLASS : ''}`}
             placeholder="Email address"
             name={SignUpForm.Email}
             type="email"
             required
             onInvalid={inputInvalidHandler}
             onChange={inputChnageHandler}
+            defaultValue={formInfo.email}
           />
-          <span className="modal__invalid-message">Your email needs to be correct.</span>
+          <span className="modal__invalid-message">{`Email ${error?.email || 'needs to be correct.'}`}</span>
         </label>
 
         <label className="modal__label">
           Password
           <Input
-            className="modal__input"
+            className={`modal__input ${error && error.password ? INPUT_INVALID_CLASS : ''}`}
             placeholder="Password"
             type="password"
             name={SignUpForm.Password}
@@ -106,8 +127,11 @@ export default function SignUp(props: ISignUpProps): JSX.Element {
             required
             onInvalid={inputInvalidHandler}
             onChange={inputChnageHandler}
+            defaultValue={formInfo.password}
           />
-          <span className="modal__invalid-message">Your password needs to be from 6 to 40 characters.</span>
+          <span className="modal__invalid-message">{`Password ${
+            error?.password || 'needs to be from 6 to 40 characters.'
+          }`}</span>
         </label>
 
         <label className="modal__label">
@@ -122,6 +146,7 @@ export default function SignUp(props: ISignUpProps): JSX.Element {
             required
             onInvalid={inputInvalidHandler}
             onChange={inputChnageHandler}
+            defaultValue={formInfo.password}
           />
           <span className="modal__invalid-message">Passwords must match.</span>
         </label>

@@ -1,5 +1,5 @@
 import { TArticle } from './articles';
-import { TUserInfo } from './users';
+import { TNewUser, TUserInfo } from './users';
 
 export type TBlogState = {
   articles: TArticle[];
@@ -7,6 +7,7 @@ export type TBlogState = {
   isLoading: boolean;
   isError: boolean;
   user: TUserInfo | null;
+  error: TNewUser | null;
 };
 
 export type TState = {

@@ -1,13 +1,11 @@
 export type TNewUser = {
-  user: {
-    username: string;
-    email: string;
-    password: string;
-  };
+  username: string;
+  email: string;
+  password: string;
 };
 
-export type TNewUserResponse = {
-  user: TUserInfo;
+export type TNewUserRequest = {
+  user: TNewUser;
 };
 
 export type TUserInfo = {
@@ -16,4 +14,8 @@ export type TUserInfo = {
   username: string;
   bio: string;
   image: null | string;
+};
+
+export type TNewUserResponse = {
+  user: TUserInfo;
 };

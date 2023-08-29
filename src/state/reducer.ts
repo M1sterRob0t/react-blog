@@ -1,15 +1,19 @@
 import { createSlice } from '@reduxjs/toolkit';
+import type { PayloadAction } from '@reduxjs/toolkit';
 
-import { TBlogState } from '../types/states';
+import type { TNewUser } from '../types/users';
+import type { TBlogState } from '../types/states';
 
 import { fetchArticles, fetchArticle, postNewUser } from './api-actions';
+import { getUserInfo, saveUserInfo } from './userInfo';
 
 const initialState: TBlogState = {
   article: null,
   articles: [],
   isLoading: false,
   isError: false,
-  user: null,
+  user: getUserInfo(),
+  error: null,
 };
 
 export const blogSlice = createSlice({
@@ -19,6 +23,9 @@ export const blogSlice = createSlice({
   reducers: {
     clearError: (state: TBlogState) => {
       state.isError = false;
+    },
+    setError: (state: TBlogState, action: PayloadAction<TNewUser | null>) => {
+      state.error = action.payload;
     },
   },
 
@@ -49,19 +56,18 @@ export const blogSlice = createSlice({
         state.isError = true;
       }) // postNewUser
       .addCase(postNewUser.pending, (state) => {
-        state.isError = false;
         state.isLoading = true;
       })
       .addCase(postNewUser.fulfilled, (state, action) => {
         state.isLoading = false;
         state.user = action.payload;
+        saveUserInfo(action.payload);
       })
       .addCase(postNewUser.rejected, (state) => {
         state.isLoading = false;
-        state.isError = true;
       });
   },
 });
 
-export const { clearError } = blogSlice.actions;
+export const { clearError, setError } = blogSlice.actions;
 export default blogSlice.reducer;

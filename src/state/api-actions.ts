@@ -1,8 +1,12 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
+import { toast } from 'react-toastify';
 
-import { TArticle, TArticlesResponse, TArticleResponse } from '../types/articles';
-import { POSTS_PER_PAGE } from '../constants';
-import { TNewUser, TNewUserResponse } from '../types/users';
+import type { TArticle, TArticlesResponse, TArticleResponse } from '../types/articles';
+import type { TNewUserRequest, TUserInfo, TNewUser } from '../types/users';
+import { POSTS_PER_PAGE, errorToastConfig, successToastConfig } from '../constants';
+
+import { setError } from './reducer';
+
 const BASE_URL = 'https://blog.kata.academy/api';
 enum Endpoint {
   Articles = '/articles',
@@ -37,7 +41,7 @@ export const fetchArticle = createAsyncThunk('blog/fetchArticle', async (name: s
   return article;
 });
 
-export const postNewUser = createAsyncThunk('blog/postNewUser', async (newUser: TNewUser) => {
+export const postNewUser = createAsyncThunk('blog/postNewUser', async (newUser: TNewUserRequest, { dispatch }) => {
   const options = {
     method: 'POST',
     headers: { 'Content-Type': 'application/json;charset=utf-8' },
@@ -45,7 +49,25 @@ export const postNewUser = createAsyncThunk('blog/postNewUser', async (newUser: 
   };
 
   const response = await fetch(`${BASE_URL}${Endpoint.Users}`, options);
-  const data: TNewUserResponse = await response.json();
+  const data = await response.json();
 
-  return data.user;
+  if (response.status === 200) {
+    const user: TUserInfo = data.user;
+    toast('Your registration was successful!', successToastConfig);
+    dispatch(setError(null));
+    return user;
+  } else if (response.status === 422) {
+    const error: TNewUser = {
+      username: data.errors.username || '',
+      email: data.errors.email || '',
+      password: data.errors.password || '',
+    };
+
+    dispatch(setError(error));
+    return Promise.reject();
+  } else {
+    const errorMessage = `Status ${response.status}. ${response.statusText}`;
+    toast(errorMessage, errorToastConfig);
+    return Promise.reject();
+  }
 });
