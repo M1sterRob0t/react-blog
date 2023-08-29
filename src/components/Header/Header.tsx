@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import './style.css';
 import { Button } from 'antd';
 
-import { APIRoute } from '../../constants';
+import { AppRoute } from '../../constants';
 
 import defaultAvatar from './images/default-avatar.png';
 
@@ -17,7 +17,7 @@ export default function Header(props: IHeaderProps): JSX.Element {
   return (
     <header className={`${className} header`}>
       <div className="header__logo">
-        <Link className="header__logo-link" to={APIRoute.Articles}>
+        <Link className="header__logo-link" to={AppRoute.Articles}>
           Realworld Blog
         </Link>
       </div>
@@ -35,10 +35,14 @@ export default function Header(props: IHeaderProps): JSX.Element {
           </div>
         ) : (
           <div className="header__unauth-user">
-            <Button className="header__sign-in" type="text">
-              Sign In
-            </Button>
-            <Button className="header__sign-up">Sign Up</Button>
+            <Link to={AppRoute.Login}>
+              <Button className="header__sign-in" type="text">
+                Sign In
+              </Button>
+            </Link>
+            <Link to={AppRoute.Registration}>
+              <Button className="header__sign-up">Sign Up</Button>
+            </Link>
           </div>
         )}
       </div>

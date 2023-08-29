@@ -16,11 +16,11 @@ export type TArticle = {
   };
 };
 
-export type TArticlesServerResponse = {
+export type TArticlesResponse = {
   articles: TArticle[];
   articlesCount: number;
 };
 
-export type TArticleServerResponse = {
+export type TArticleResponse = {
   article: TArticle;
 };

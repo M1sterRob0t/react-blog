@@ -16,6 +16,7 @@
 }
 
 .modal__label {
+  position: relative;
   display: block;
   font-size: 14px;
   letter-spacing: 0.3px;
@@ -85,4 +86,19 @@
   text-decoration: none;
   color: #1890FF;
   margin-left: 4px;
+}
+
+.modal__input--invalid {
+  border: 1px solid #F5222D;
+}
+
+.modal__invalid-message {
+  display: none;
+  color: #F5222D;
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.modal__input--invalid + .modal__invalid-message {
+  display: block;
 }

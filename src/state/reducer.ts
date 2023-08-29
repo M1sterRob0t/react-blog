@@ -2,13 +2,14 @@ import { createSlice } from '@reduxjs/toolkit';
 
 import { TBlogState } from '../types/states';
 
-import { fetchArticles, fetchArticle } from './api-actions';
+import { fetchArticles, fetchArticle, postNewUser } from './api-actions';
 
 const initialState: TBlogState = {
   article: null,
   articles: [],
   isLoading: false,
   isError: false,
+  user: null,
 };
 
 export const blogSlice = createSlice({
@@ -44,6 +45,18 @@ export const blogSlice = createSlice({
         state.article = action.payload;
       })
       .addCase(fetchArticle.rejected, (state) => {
+        state.isLoading = false;
+        state.isError = true;
+      }) // postNewUser
+      .addCase(postNewUser.pending, (state) => {
+        state.isError = false;
+        state.isLoading = true;
+      })
+      .addCase(postNewUser.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload;
+      })
+      .addCase(postNewUser.rejected, (state) => {
         state.isLoading = false;
         state.isError = true;
       });
