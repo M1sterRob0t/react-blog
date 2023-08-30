@@ -19,3 +19,12 @@ export type TUserInfo = {
 export type TNewUserResponse = {
   user: TUserInfo;
 };
+
+export type TUserLogin = {
+  email: string;
+  password: string;
+};
+
+export type TUserLoginRequest = {
+  user: TUserLogin;
+};

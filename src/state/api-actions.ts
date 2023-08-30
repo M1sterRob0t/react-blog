@@ -2,15 +2,16 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
 
 import type { TArticle, TArticlesResponse, TArticleResponse } from '../types/articles';
-import type { TNewUserRequest, TUserInfo, TNewUser } from '../types/users';
+import type { TNewUserRequest, TUserInfo, TNewUser, TUserLoginRequest } from '../types/users';
 import { POSTS_PER_PAGE, errorToastConfig, successToastConfig } from '../constants';
 
-import { setError } from './reducer';
+import { setErrorAction } from './reducer';
 
 const BASE_URL = 'https://blog.kata.academy/api';
 enum Endpoint {
   Articles = '/articles',
   Users = '/users',
+  Login = '/users/login',
 }
 
 function formatArticles(articles: TArticle[]): TArticle[] {
@@ -54,7 +55,7 @@ export const postNewUser = createAsyncThunk('blog/postNewUser', async (newUser: 
   if (response.status === 200) {
     const user: TUserInfo = data.user;
     toast('Your registration was successful!', successToastConfig);
-    dispatch(setError(null));
+    dispatch(setErrorAction(null));
     return user;
   } else if (response.status === 422) {
     const error: TNewUser = {
@@ -63,10 +64,31 @@ export const postNewUser = createAsyncThunk('blog/postNewUser', async (newUser: 
       password: data.errors.password || '',
     };
 
-    dispatch(setError(error));
+    dispatch(setErrorAction(error));
     return Promise.reject();
   } else {
-    const errorMessage = `Status ${response.status}. ${response.statusText}`;
+    const errorMessage = `Status: ${response.status}. ${response.statusText}`;
+    toast(errorMessage, errorToastConfig);
+    return Promise.reject();
+  }
+});
+
+export const requireLogin = createAsyncThunk('blog/requireLogin', async (user: TUserLoginRequest) => {
+  const options = {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json;charset=utf-8' },
+    body: JSON.stringify(user),
+  };
+
+  const response = await fetch(`${BASE_URL}${Endpoint.Login}`, options);
+  const data = await response.json();
+
+  if (response.status === 200) {
+    const user: TUserInfo = data.user;
+    toast('You have successfully logged in!', successToastConfig);
+    return user;
+  } else {
+    const errorMessage = `Status: ${response.status}. ${response.statusText}`;
     toast(errorMessage, errorToastConfig);
     return Promise.reject();
   }

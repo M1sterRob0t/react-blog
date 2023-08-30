@@ -4,8 +4,8 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import type { TNewUser } from '../types/users';
 import type { TBlogState } from '../types/states';
 
-import { fetchArticles, fetchArticle, postNewUser } from './api-actions';
-import { getUserInfo, saveUserInfo } from './userInfo';
+import { fetchArticles, fetchArticle, postNewUser, requireLogin } from './api-actions';
+import { getUserInfo, saveUserInfo, removeUserInfo } from './userInfo';
 
 const initialState: TBlogState = {
   article: null,
@@ -21,11 +21,15 @@ export const blogSlice = createSlice({
   initialState,
 
   reducers: {
-    clearError: (state: TBlogState) => {
+    clearErrorAction: (state: TBlogState) => {
       state.isError = false;
     },
-    setError: (state: TBlogState, action: PayloadAction<TNewUser | null>) => {
+    setErrorAction: (state: TBlogState, action: PayloadAction<TNewUser | null>) => {
       state.error = action.payload;
+    },
+    logoutAction: (state: TBlogState) => {
+      state.user = null;
+      removeUserInfo();
     },
   },
 
@@ -65,9 +69,20 @@ export const blogSlice = createSlice({
       })
       .addCase(postNewUser.rejected, (state) => {
         state.isLoading = false;
+      }) // requireLogin
+      .addCase(requireLogin.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(requireLogin.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload;
+        saveUserInfo(action.payload);
+      })
+      .addCase(requireLogin.rejected, (state) => {
+        state.isLoading = false;
       });
   },
 });
 
-export const { clearError, setError } = blogSlice.actions;
+export const { clearErrorAction, setErrorAction, logoutAction } = blogSlice.actions;
 export default blogSlice.reducer;

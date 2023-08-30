@@ -1,9 +1,10 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './style.css';
 import { Button } from 'antd';
 
 import { AppRoute } from '../../constants';
-import { useAppSelector } from '../../hooks/hooks';
+import { useAppDispatch, useAppSelector } from '../../hooks/hooks';
+import { logoutAction } from '../../state/reducer';
 
 import defaultAvatar from './images/default-avatar.png';
 
@@ -14,6 +15,8 @@ interface IHeaderProps {
 export default function Header(props: IHeaderProps): JSX.Element {
   const { className } = props;
   const user = useAppSelector((state) => state.blog.user);
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   return (
     <header className={`${className} header`}>
@@ -32,17 +35,21 @@ export default function Header(props: IHeaderProps): JSX.Element {
                 <img src={user.image || defaultAvatar} width="46" height="46" alt="user avatar " />
               </div>
             </div>
-            <Button className="header__logout">Log Out</Button>
+            <Button className="header__logout" onClick={() => dispatch(logoutAction())}>
+              Log Out
+            </Button>
           </div>
         ) : (
           <div className="header__unauth-user">
             <Link to={AppRoute.Login}>
-              <Button className="header__sign-in" type="text">
+              <Button className="header__sign-in" type="text" onClick={() => navigate(AppRoute.Login)}>
                 Sign In
               </Button>
             </Link>
             <Link to={AppRoute.Registration}>
-              <Button className="header__sign-up">Sign Up</Button>
+              <Button className="header__sign-up" onClick={() => navigate(AppRoute.Registration)}>
+                Sign Up
+              </Button>
             </Link>
           </div>
         )}

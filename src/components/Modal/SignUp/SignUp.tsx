@@ -1,5 +1,5 @@
 import { FormEvent, useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, Link } from 'react-router-dom';
 import { Input, Typography, Button } from 'antd';
 
 import Spinner from '../../Spinner';
@@ -56,7 +56,6 @@ export default function SignUp(props: ISignUpProps): JSX.Element {
 
     const newUser: TNewUserRequest = { user: { username, email, password } };
 
-    console.log(newUser);
     setFormInfo({ username, email, password });
     dispatch(postNewUser(newUser));
   }
@@ -73,8 +72,7 @@ export default function SignUp(props: ISignUpProps): JSX.Element {
   }
   if (isAuthorized) return <Navigate to={AppRoute.Articles} />;
   if (isLoading) return <Spinner />;
-  // eslint-disable-next-line no-debugger
-  debugger;
+
   return (
     <section className={`${className} modal`}>
       <Title level={4} className="modal__title">
@@ -168,9 +166,9 @@ export default function SignUp(props: ISignUpProps): JSX.Element {
       <div className="modal__message">
         <span className="modal__message-text">
           Already have an account?
-          <a className="modal__message-link" href="#">
+          <Link to={AppRoute.Login} className="modal__message-link">
             Sign In
-          </a>
+          </Link>
           .
         </span>
       </div>
