@@ -1,15 +1,15 @@
 import { FormEvent, useState } from 'react';
-import { Navigate } from 'react-router-dom';
 import { Input, Typography, Button } from 'antd';
 import { toast } from 'react-toastify';
 
-import { AppRoute, successToastConfig, INPUT_INVALID_CLASS } from '../../../constants';
+import { successToastConfig, INPUT_INVALID_CLASS } from '../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks/hooks';
-import Spinner from '../../Spinner';
 import { postUpdatedUser } from '../../../state/api-actions';
 import { TUserEditRequest } from '../../../types/users';
 import '../style.css';
 import { clearErrorAction } from '../../../state/reducer';
+import { withLoading } from '../../../hocs/withLoading';
+import { withRedirect } from '../../../hocs/withRedirect';
 
 const EditForm = {
   Username: 'username',
@@ -23,13 +23,12 @@ interface IEditProfileProps {
 }
 const { Title } = Typography;
 
-export default function EditProfile(props: IEditProfileProps): JSX.Element {
+function EditProfile(props: IEditProfileProps): JSX.Element {
   const { className } = props;
   const dispatch = useAppDispatch();
 
   const user = useAppSelector((state) => state.blog.user);
   const error = useAppSelector((state) => state.blog.error);
-  const isLoading = useAppSelector((state) => state.blog.isLoading);
 
   const editFormDefault = {
     username: user?.username,
@@ -77,9 +76,6 @@ export default function EditProfile(props: IEditProfileProps): JSX.Element {
     const input = evt.target as HTMLInputElement;
     if (input.validity.valid) input.classList.remove(INPUT_INVALID_CLASS);
   }
-
-  if (!user) return <Navigate to={AppRoute.Articles} />;
-  if (isLoading) return <Spinner />;
 
   return (
     <section className={`${className} modal`}>
@@ -159,3 +155,5 @@ export default function EditProfile(props: IEditProfileProps): JSX.Element {
     </section>
   );
 }
+
+export default withRedirect(withLoading<IEditProfileProps & JSX.IntrinsicAttributes>(EditProfile));

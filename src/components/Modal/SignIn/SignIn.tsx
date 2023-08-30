@@ -1,30 +1,28 @@
 import { FormEvent } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import '../style.css';
 import { Input, Typography, Button } from 'antd';
 
 import { TUserLoginRequest } from '../../../types/users';
 import { requireLogin } from '../../../state/api-actions';
-import { useAppDispatch, useAppSelector } from '../../../hooks/hooks';
-import Spinner from '../../Spinner';
+import { useAppDispatch } from '../../../hooks/hooks';
 import { AppRoute } from '../../../constants';
+import { withLoading } from '../../../hocs/withLoading';
+import { withRedirect } from '../../../hocs/withRedirect';
 
 const SignInForm = {
   Email: 'email',
   Password: 'password',
 };
 
-interface IEditProfileProps {
+interface ISignInProps {
   className: string;
 }
 const { Title } = Typography;
 
-export default function EditProfile(props: IEditProfileProps): JSX.Element {
+function SignIn(props: ISignInProps): JSX.Element {
   const { className } = props;
   const dispatch = useAppDispatch();
-  const user = useAppSelector((state) => state.blog.user);
-  const isLoading = useAppSelector((state) => state.blog.isLoading);
-  const isAuthorized = user ? true : false;
 
   function formSubmitHandler(evt: FormEvent<HTMLFormElement>) {
     evt.preventDefault();
@@ -38,9 +36,6 @@ export default function EditProfile(props: IEditProfileProps): JSX.Element {
 
     dispatch(requireLogin(user));
   }
-
-  if (isLoading) return <Spinner />;
-  if (isAuthorized) return <Navigate to={AppRoute.Articles} />;
 
   return (
     <section className={`${className} modal`}>
@@ -65,12 +60,14 @@ export default function EditProfile(props: IEditProfileProps): JSX.Element {
       <div className="modal__message">
         <span className="modal__message-text">
           Don’t have an account?
-          <a className="modal__message-link" href="#">
+          <Link to={AppRoute.Registration} className="modal__message-link">
             Sign Up
-          </a>
+          </Link>
           .
         </span>
       </div>
     </section>
   );
 }
+
+export default withRedirect(withLoading<ISignInProps & JSX.IntrinsicAttributes>(SignIn));

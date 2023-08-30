@@ -1,14 +1,14 @@
 import { FormEvent, useState } from 'react';
-import { Navigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Input, Typography, Button } from 'antd';
 
-import Spinner from '../../Spinner';
 import { postNewUser } from '../../../state/api-actions';
 import type { TNewUser, TNewUserRequest } from '../../../types/users';
 import { useAppDispatch, useAppSelector } from '../../../hooks/hooks';
 import '../style.css';
-import { getUserInfo } from '../../../state/userInfo';
 import { AppRoute, INPUT_INVALID_CLASS } from '../../../constants';
+import { withLoading } from '../../../hocs/withLoading';
+import { withRedirect } from '../../../hocs/withRedirect';
 
 const SignUpForm = {
   Username: 'username',
@@ -29,13 +29,11 @@ interface ISignUpProps {
 }
 const { Title } = Typography;
 
-export default function SignUp(props: ISignUpProps): JSX.Element {
+function SignUp(props: ISignUpProps): JSX.Element {
   const { className } = props;
   const dispatch = useAppDispatch();
   const error = useAppSelector((state) => state.blog.error);
-  const isLoading = useAppSelector((state) => state.blog.isLoading);
   const [formInfo, setFormInfo] = useState(formInfoDefault);
-  const isAuthorized = getUserInfo();
 
   function formSubmitHandler(evt: FormEvent<HTMLFormElement>): void {
     evt.preventDefault();
@@ -69,8 +67,6 @@ export default function SignUp(props: ISignUpProps): JSX.Element {
     const input = evt.target as HTMLInputElement;
     if (input.validity.valid) input.classList.remove(INPUT_INVALID_CLASS);
   }
-  if (isAuthorized) return <Navigate to={AppRoute.Articles} />;
-  if (isLoading) return <Spinner />;
 
   return (
     <section className={`${className} modal`}>
@@ -174,3 +170,5 @@ export default function SignUp(props: ISignUpProps): JSX.Element {
     </section>
   );
 }
+
+export default withRedirect(withLoading<ISignUpProps & JSX.IntrinsicAttributes>(SignUp));
