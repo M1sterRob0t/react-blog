@@ -4,14 +4,14 @@ export enum AppRoute {
   Root = '/',
   Articles = '/articles',
   Article = '/articles/:name',
-  Login = '/login',
+  Login = '/sign-in',
   Registration = '/sign-up',
   Profile = '/profile',
 }
 
 export const errorToastConfig = {
   position: 'top-center',
-  autoClose: 5000,
+  autoClose: 3000,
   hideProgressBar: false,
   closeOnClick: true,
   pauseOnHover: true,
@@ -23,7 +23,7 @@ export const errorToastConfig = {
 
 export const successToastConfig = {
   position: 'top-center',
-  autoClose: 5000,
+  autoClose: 3000,
   hideProgressBar: false,
   closeOnClick: true,
   pauseOnHover: true,
@@ -35,7 +35,7 @@ export const successToastConfig = {
 
 export const warningToastConfig = {
   position: 'top-center',
-  autoClose: 5000,
+  autoClose: 3000,
   hideProgressBar: false,
   closeOnClick: true,
   pauseOnHover: true,

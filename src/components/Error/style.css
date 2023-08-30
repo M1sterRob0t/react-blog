@@ -1,0 +1,22 @@
+.error {
+  width: 100%; 
+  height: 60vh; 
+  text-align: center; 
+  margin-top: 200px;
+}
+
+.error__title {
+  display: flex; 
+  justify-content:center;
+  align-items: flex-end;
+}
+
+.error__message-main {
+  color: black;
+  font-size: 23px;
+}
+
+.error__message-additional { 
+  color: grey; 
+  font-size: 18px;
+}

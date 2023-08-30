@@ -4,22 +4,19 @@ import { Pagination } from 'antd';
 import './style.css';
 import Post from '../Post';
 import Spinner from '../Spinner';
-import Error from '../Error';
 import { POSTS_PER_PAGE, MAX_POSTS } from '../../constants';
 import { useAppDispatch, useAppSelector } from '../../hooks/hooks';
 import { fetchArticles } from '../../state/api-actions';
+import { withError } from '../../hocs/withError';
 
-export default function Posts(): JSX.Element {
+function Posts(): JSX.Element {
   const articles = useAppSelector((state) => state.blog.articles);
   const isLoading = useAppSelector((state) => state.blog.isLoading);
-  const isError = useAppSelector((state) => state.blog.isError);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     dispatch(fetchArticles(1));
   }, []);
-
-  if (isError) return <Error />;
 
   return (
     <div className="posts">
@@ -44,3 +41,4 @@ export default function Posts(): JSX.Element {
     </div>
   );
 }
+export default withError(Posts);

@@ -1,18 +1,19 @@
 import { Space, Typography } from 'antd';
 
+import './style.css';
 import ErrorImage from './image/sad-cat.png';
 
 const { Title, Text } = Typography;
 
 function Error(): JSX.Element {
   return (
-    <Space direction="vertical" style={{ width: '100%', height: '65vh', textAlign: 'center', marginTop: '200px' }}>
-      <Title level={1} style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-end' }}>
+    <Space className="error" direction="vertical">
+      <Title className="error__title" level={1}>
         <img src={ErrorImage} width="50" height="50" />
         Oops!
       </Title>
-      <Text style={{ fontSize: '23px' }}>Sorry, an unexpected error has occured.</Text>
-      <Text style={{ color: 'grey', fontSize: '18px' }}>Not Found</Text>
+      <Text className="error__message-main">Sorry, an unexpected error has occured.</Text>
+      <Text className="error__message-additional">Not Found</Text>
     </Space>
   );
 }

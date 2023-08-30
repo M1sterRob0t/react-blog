@@ -9,7 +9,6 @@ import { TUserEditRequest } from '../../../types/users';
 import '../style.css';
 import { clearErrorAction } from '../../../state/reducer';
 import { withLoading } from '../../../hocs/withLoading';
-import { withRedirect } from '../../../hocs/withRedirect';
 
 const EditForm = {
   Username: 'username',
@@ -156,4 +155,4 @@ function EditProfile(props: IEditProfileProps): JSX.Element {
   );
 }
 
-export default withRedirect(withLoading<IEditProfileProps & JSX.IntrinsicAttributes>(EditProfile));
+export default withLoading<IEditProfileProps & JSX.IntrinsicAttributes>(EditProfile);
