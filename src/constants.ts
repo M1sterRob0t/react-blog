@@ -6,6 +6,7 @@ export enum AppRoute {
   Article = '/articles/:name',
   Login = '/login',
   Registration = '/sign-up',
+  Profile = '/profile',
 }
 
 export const errorToastConfig = {
@@ -43,3 +44,5 @@ export const warningToastConfig = {
   theme: 'light',
   type: 'warning',
 } as const;
+
+export const INPUT_INVALID_CLASS = 'modal__input--invalid';

@@ -28,3 +28,14 @@ export type TUserLogin = {
 export type TUserLoginRequest = {
   user: TUserLogin;
 };
+
+export type TUserEdit = {
+  email?: string;
+  username?: string;
+  newPassword?: string;
+  image?: null | string;
+};
+
+export type TUserEditRequest = {
+  user: TUserEdit;
+};

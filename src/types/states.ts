@@ -6,6 +6,7 @@ export type TBlogState = {
   article: TArticle | null;
   isLoading: boolean;
   isError: boolean;
+  isUpdated: boolean;
   user: TUserInfo | null;
   error: TNewUser | null;
 };

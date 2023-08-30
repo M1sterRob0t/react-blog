@@ -2,16 +2,18 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
 
 import type { TArticle, TArticlesResponse, TArticleResponse } from '../types/articles';
-import type { TNewUserRequest, TUserInfo, TNewUser, TUserLoginRequest } from '../types/users';
+import type { TNewUserRequest, TUserInfo, TNewUser, TUserLoginRequest, TUserEditRequest } from '../types/users';
 import { POSTS_PER_PAGE, errorToastConfig, successToastConfig } from '../constants';
 
 import { setErrorAction } from './reducer';
+import { getUserInfo } from './userInfo';
 
 const BASE_URL = 'https://blog.kata.academy/api';
 enum Endpoint {
   Articles = '/articles',
   Users = '/users',
   Login = '/users/login',
+  User = '/user',
 }
 
 function formatArticles(articles: TArticle[]): TArticle[] {
@@ -93,3 +95,42 @@ export const requireLogin = createAsyncThunk('blog/requireLogin', async (user: T
     return Promise.reject();
   }
 });
+
+export const postUpdatedUser = createAsyncThunk(
+  'blog/postUpdatedUser',
+  async (updatedUser: TUserEditRequest, { dispatch }) => {
+    const authToken = getUserInfo()?.token;
+    const options = {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json;charset=utf-8',
+        Authorization: `Token ${authToken || ''}`,
+        accept: 'application/json',
+      },
+      body: JSON.stringify(updatedUser),
+    };
+
+    const response = await fetch(`${BASE_URL}${Endpoint.User}`, options);
+    const data = await response.json();
+
+    if (response.status === 200) {
+      const user: TUserInfo = data.user;
+      toast('Successfully updated!', successToastConfig);
+      dispatch(setErrorAction(null));
+      return user;
+    } else if (response.status === 422) {
+      const error: TNewUser = {
+        username: data.errors.username || '',
+        email: data.errors.email || '',
+        password: data.errors.password || '',
+      };
+
+      dispatch(setErrorAction(error));
+      return Promise.reject();
+    } else {
+      const errorMessage = `Status: ${response.status}. ${response.statusText}`;
+      toast(errorMessage, errorToastConfig);
+      return Promise.reject();
+    }
+  }
+);

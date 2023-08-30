@@ -8,9 +8,8 @@ import type { TNewUser, TNewUserRequest } from '../../../types/users';
 import { useAppDispatch, useAppSelector } from '../../../hooks/hooks';
 import '../style.css';
 import { getUserInfo } from '../../../state/userInfo';
-import { AppRoute } from '../../../constants';
+import { AppRoute, INPUT_INVALID_CLASS } from '../../../constants';
 
-const INPUT_INVALID_CLASS = 'modal__input--invalid';
 const SignUpForm = {
   Username: 'username',
   Email: 'email',

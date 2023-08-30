@@ -4,7 +4,7 @@ import { Button } from 'antd';
 
 import { AppRoute } from '../../constants';
 import { useAppDispatch, useAppSelector } from '../../hooks/hooks';
-import { logoutAction } from '../../state/reducer';
+import { logoutAction, setErrorAction } from '../../state/reducer';
 
 import defaultAvatar from './images/default-avatar.png';
 
@@ -21,7 +21,7 @@ export default function Header(props: IHeaderProps): JSX.Element {
   return (
     <header className={`${className} header`}>
       <div className="header__logo">
-        <Link className="header__logo-link" to={AppRoute.Articles}>
+        <Link className="header__logo-link" to={AppRoute.Articles} onClick={() => dispatch(setErrorAction(null))}>
           Realworld Blog
         </Link>
       </div>
@@ -30,10 +30,12 @@ export default function Header(props: IHeaderProps): JSX.Element {
           <div className="header__auth-user">
             <Button className="header__create-article">Create article</Button>
             <div className="header__user-profile">
-              <div className="header__user-name">{user.username}</div>
-              <div className="header__user-avatar">
+              <Link to={AppRoute.Profile} className="header__user-name">
+                {user.username}
+              </Link>
+              <Link to={AppRoute.Profile} className="header__user-avatar">
                 <img src={user.image || defaultAvatar} width="46" height="46" alt="user avatar " />
-              </div>
+              </Link>
             </div>
             <Button className="header__logout" onClick={() => dispatch(logoutAction())}>
               Log Out
