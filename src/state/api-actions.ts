@@ -1,9 +1,20 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
+import { toast } from 'react-toastify';
 
-import { TArticle, TArticlesServerResponse, TArticleServerResponse } from '../types/articles';
-import { POSTS_PER_PAGE, APIRoute } from '../constants';
+import type { TArticle, TArticlesResponse, TArticleResponse } from '../types/articles';
+import type { TNewUserRequest, TUserInfo, TNewUser, TUserLoginRequest, TUserEditRequest } from '../types/users';
+import { POSTS_PER_PAGE, errorToastConfig, successToastConfig } from '../constants';
+
+import { setErrorAction } from './reducer';
+import { getUserInfo } from './userInfo';
 
 const BASE_URL = 'https://blog.kata.academy/api';
+enum Endpoint {
+  Articles = '/articles',
+  Users = '/users',
+  Login = '/users/login',
+  User = '/user',
+}
 
 function formatArticles(articles: TArticle[]): TArticle[] {
   const articlesWithFilteredTags: TArticle[] = articles.map((article: TArticle) => {
@@ -18,17 +29,108 @@ function formatArticles(articles: TArticle[]): TArticle[] {
 export const fetchArticles = createAsyncThunk('blog/fetchArticles', async (page: number) => {
   const offset = page === 1 ? 0 : page * POSTS_PER_PAGE - POSTS_PER_PAGE;
 
-  const response = await fetch(`${BASE_URL}${APIRoute.Articles}?offset=${offset}&limit=${POSTS_PER_PAGE}`);
-  const data: TArticlesServerResponse = await response.json();
+  const response = await fetch(`${BASE_URL}${Endpoint.Articles}?offset=${offset}&limit=${POSTS_PER_PAGE}`);
+  const data: TArticlesResponse = await response.json();
   const articles: TArticle[] = formatArticles(data.articles);
 
   return articles;
 });
 
 export const fetchArticle = createAsyncThunk('blog/fetchArticle', async (name: string) => {
-  const response = await fetch(`${BASE_URL}${APIRoute.Articles}/${name}`);
-  const data: TArticleServerResponse = await response.json();
+  const response = await fetch(`${BASE_URL}${Endpoint.Articles}/${name}`);
+  const data: TArticleResponse = await response.json();
   const article: TArticle = formatArticles([data.article])[0];
 
   return article;
 });
+
+export const postNewUser = createAsyncThunk('blog/postNewUser', async (newUser: TNewUserRequest, { dispatch }) => {
+  const options = {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json;charset=utf-8' },
+    body: JSON.stringify(newUser),
+  };
+
+  const response = await fetch(`${BASE_URL}${Endpoint.Users}`, options);
+  const data = await response.json();
+
+  if (response.status === 200) {
+    const user: TUserInfo = data.user;
+    toast('Your registration was successful!', successToastConfig);
+    dispatch(setErrorAction(null));
+    return user;
+  } else if (response.status === 422) {
+    const error: TNewUser = {
+      username: data.errors.username || '',
+      email: data.errors.email || '',
+      password: data.errors.password || '',
+    };
+
+    dispatch(setErrorAction(error));
+    return Promise.reject();
+  } else {
+    const errorMessage = `Status: ${response.status}. ${response.statusText}`;
+    toast(errorMessage, errorToastConfig);
+    return Promise.reject();
+  }
+});
+
+export const requireLogin = createAsyncThunk('blog/requireLogin', async (user: TUserLoginRequest) => {
+  const options = {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json;charset=utf-8' },
+    body: JSON.stringify(user),
+  };
+
+  const response = await fetch(`${BASE_URL}${Endpoint.Login}`, options);
+  const data = await response.json();
+
+  if (response.status === 200) {
+    const user: TUserInfo = data.user;
+    toast('You have successfully logged in!', successToastConfig);
+    return user;
+  } else {
+    const errorMessage = `Status: ${response.status}. ${response.statusText}`;
+    toast(errorMessage, errorToastConfig);
+    return Promise.reject();
+  }
+});
+
+export const postUpdatedUser = createAsyncThunk(
+  'blog/postUpdatedUser',
+  async (updatedUser: TUserEditRequest, { dispatch }) => {
+    const authToken = getUserInfo()?.token;
+    const options = {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json;charset=utf-8',
+        Authorization: `Token ${authToken || ''}`,
+        accept: 'application/json',
+      },
+      body: JSON.stringify(updatedUser),
+    };
+
+    const response = await fetch(`${BASE_URL}${Endpoint.User}`, options);
+    const data = await response.json();
+
+    if (response.status === 200) {
+      const user: TUserInfo = data.user;
+      toast('Successfully updated!', successToastConfig);
+      dispatch(setErrorAction(null));
+      return user;
+    } else if (response.status === 422) {
+      const error: TNewUser = {
+        username: data.errors.username || '',
+        email: data.errors.email || '',
+        password: data.errors.password || '',
+      };
+
+      dispatch(setErrorAction(error));
+      return Promise.reject();
+    } else {
+      const errorMessage = `Status: ${response.status}. ${response.statusText}`;
+      toast(errorMessage, errorToastConfig);
+      return Promise.reject();
+    }
+  }
+);

@@ -1,35 +1,31 @@
-import { useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
 
 import Header from '../Header';
 import Posts from '../Posts';
-import { fetchArticles } from '../../state/api-actions';
-import { useAppSelector, useAppDispatch } from '../../hooks/hooks';
 import './App.css';
-import { APIRoute } from '../../constants';
+import { AppRoute } from '../../constants';
 import PostFull from '../PostFull';
+import SignUp from '../Modal/SignUp';
+import SignIn from '../Modal/SignIn';
+import EditProfile from '../Modal/EditProfile';
 
 // import CreateNewPost from '../CreateNewPost';
-// import SignUp from '../Modal/SignUp';
-// import EditProfile from '../Modal/EditProfile';
-// import SignIn from '../Modal/SignIn';
 
 function App() {
-  const articles = useAppSelector((state) => state.blog.articles);
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    dispatch(fetchArticles(1));
-  }, []);
-
   return (
     <div className="app">
-      <Header className="app__header" isUserAuthorized={false} />
+      <Header className="app__header" />
       <Routes>
-        <Route path={APIRoute.Root} element={<Posts articles={articles} />} />
-        <Route path={APIRoute.Articles} element={<Posts articles={articles} />} />
-        <Route path={APIRoute.Article} element={<PostFull />} />
+        <Route path={AppRoute.Root} element={<Posts />} />
+        <Route path={AppRoute.Articles} element={<Posts />} />
+        <Route path={AppRoute.Article} element={<PostFull />} />
+        <Route path={AppRoute.Login} element={<SignIn className="app__modal" />} />
+        <Route path={AppRoute.Registration} element={<SignUp className="app__modal" />} />
+        <Route path={AppRoute.Profile} element={<EditProfile className="app__modal" />} />
       </Routes>
+      <ToastContainer />
     </div>
   );
 }

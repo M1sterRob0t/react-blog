@@ -1,26 +1,22 @@
+import { useEffect } from 'react';
 import { Pagination } from 'antd';
 
 import './style.css';
 import Post from '../Post';
 import Spinner from '../Spinner';
-import Error from '../Error';
-import { TArticle } from '../../types/articles';
 import { POSTS_PER_PAGE, MAX_POSTS } from '../../constants';
 import { useAppDispatch, useAppSelector } from '../../hooks/hooks';
 import { fetchArticles } from '../../state/api-actions';
+import { withError } from '../../hocs/withError';
 
-interface IPostsProps {
-  articles: TArticle[];
-}
-
-export default function Posts(props: IPostsProps): JSX.Element {
-  const { articles } = props;
-
+function Posts(): JSX.Element {
+  const articles = useAppSelector((state) => state.blog.articles);
   const isLoading = useAppSelector((state) => state.blog.isLoading);
-  const isError = useAppSelector((state) => state.blog.isError);
   const dispatch = useAppDispatch();
 
-  if (isError) return <Error />;
+  useEffect(() => {
+    dispatch(fetchArticles(1));
+  }, []);
 
   return (
     <div className="posts">
@@ -45,3 +41,4 @@ export default function Posts(props: IPostsProps): JSX.Element {
     </div>
   );
 }
+export default withError(Posts);

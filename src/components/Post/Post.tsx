@@ -6,9 +6,9 @@ import { format } from 'date-fns';
 
 import { TArticle } from '../../types/articles';
 import './style.css';
-import { APIRoute } from '../../constants';
+import { AppRoute } from '../../constants';
 
-const DATE_FROMAT = 'MMMM 	M, yyy';
+const DATE_FROMAT = 'MMMM 	d, yyy';
 
 interface IPostProps {
   full?: true;
@@ -33,7 +33,7 @@ export default function Post(props: IPostProps) {
   return (
     <article className={`post ${full && 'post--full'}`}>
       <div className="post__header">
-        <Link to={`${APIRoute.Articles}/${article.slug}`} className="post__title">
+        <Link to={`${AppRoute.Articles}/${article.slug}`} className="post__title">
           {article.title}
         </Link>
         <span className="post__likes">

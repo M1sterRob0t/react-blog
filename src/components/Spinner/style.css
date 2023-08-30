@@ -1,0 +1,11 @@
+.spinner {
+  height: 75vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+}
+
+.spinner__inner {
+  flex-grow: 1;
+}
