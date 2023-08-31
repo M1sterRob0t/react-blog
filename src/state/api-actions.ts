@@ -99,12 +99,12 @@ export const requireLogin = createAsyncThunk('blog/requireLogin', async (user: T
 export const postUpdatedUser = createAsyncThunk(
   'blog/postUpdatedUser',
   async (updatedUser: TUserEditRequest, { dispatch }) => {
-    const authToken = getUserInfo()?.token;
+    const authToken = getUserInfo().token;
     const options = {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json;charset=utf-8',
-        Authorization: `Token ${authToken || ''}`,
+        Authorization: `Token ${authToken}`,
         accept: 'application/json',
       },
       body: JSON.stringify(updatedUser),
@@ -134,3 +134,33 @@ export const postUpdatedUser = createAsyncThunk(
     }
   }
 );
+
+type TNewArticle = {
+  title: string;
+  description: string;
+  body: string;
+  tags: string[];
+};
+
+type TNewArticleRequest = {
+  article: TNewArticle;
+};
+
+export const postNewArticle = createAsyncThunk('blog/postNewArticle', async (newArticle: TNewArticleRequest) => {
+  const authToken = getUserInfo().token;
+
+  const options = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json;charset=utf-8',
+      Authorization: `Token ${authToken}`,
+      accept: 'application/json',
+    },
+    body: JSON.stringify(newArticle),
+  };
+
+  const response = await fetch(`${BASE_URL}${Endpoint.Articles}`, options);
+  const data = await response.json();
+
+  return data;
+});
