@@ -4,7 +4,15 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import type { TNewUser } from '../types/users';
 import type { TBlogState } from '../types/states';
 
-import { fetchArticles, fetchArticle, postNewUser, requireLogin, postUpdatedUser } from './api-actions';
+import {
+  fetchArticles,
+  fetchArticle,
+  postNewUser,
+  requireLogin,
+  postUpdatedUser,
+  postNewArticle,
+  updateUserArticle,
+} from './api-actions';
 import { getUserInfo, saveUserInfo, removeUserInfo } from './userInfo';
 
 const initialState: TBlogState = {
@@ -95,6 +103,27 @@ export const blogSlice = createSlice({
         saveUserInfo(action.payload);
       })
       .addCase(postUpdatedUser.rejected, (state) => {
+        state.isUpdated = false;
+        state.isLoading = false;
+      }) // postNewArticle
+      .addCase(postNewArticle.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(postNewArticle.fulfilled, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(postNewArticle.rejected, (state) => {
+        state.isLoading = false;
+      }) // editUserArticle
+      .addCase(updateUserArticle.pending, (state) => {
+        state.isUpdated = false;
+        state.isLoading = true;
+      })
+      .addCase(updateUserArticle.fulfilled, (state) => {
+        state.isUpdated = true;
+        state.isLoading = false;
+      })
+      .addCase(updateUserArticle.rejected, (state) => {
         state.isUpdated = false;
         state.isLoading = false;
       });

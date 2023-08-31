@@ -158,3 +158,36 @@ export const postNewArticle = createAsyncThunk('blog/postNewArticle', async (new
     return Promise.reject();
   }
 });
+
+interface IUpdateUserArticle {
+  newArticle: TNewArticleRequest;
+  slug: string;
+}
+
+export const updateUserArticle = createAsyncThunk(
+  'blog/updateUserArticle',
+  async ({ newArticle, slug }: IUpdateUserArticle) => {
+    const authToken = getUserInfo().token;
+    const options = {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json;charset=utf-8',
+        Authorization: `Token ${authToken}`,
+        accept: 'application/json',
+      },
+      body: JSON.stringify(newArticle),
+    };
+
+    const response = await fetch(`${BASE_URL}${Endpoint.Articles}/${slug}`, options);
+    const data = await response.json();
+
+    if (response.status === 200) {
+      toast('The article has been successfully updated!', successToastConfig);
+      return data;
+    } else {
+      const errorMessage = `Status: ${response.status}. ${data.errors.message}.`;
+      toast(errorMessage, errorToastConfig);
+      return Promise.reject();
+    }
+  }
+);

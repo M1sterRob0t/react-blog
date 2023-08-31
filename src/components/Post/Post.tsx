@@ -4,20 +4,20 @@ import { HeartOutlined, HeartFilled } from '@ant-design/icons';
 import { Tag, Button, message, Popconfirm } from 'antd';
 import { format } from 'date-fns';
 
-import { TArticle } from '../../types/articles';
-import './style.css';
 import { AppRoute } from '../../constants';
+import type { TArticle } from '../../types/articles';
+import './style.css';
 
 const DATE_FROMAT = 'MMMM 	d, yyy';
 
 interface IPostProps {
-  full?: true;
-  authorized?: true;
   article: TArticle;
+  full?: true;
+  fromUser?: boolean;
 }
 
 export default function Post(props: IPostProps) {
-  const { full, authorized, article } = props;
+  const { full, fromUser, article } = props;
   const date = format(new Date(article.createdAt), DATE_FROMAT);
 
   const onConfirm = (e: React.MouseEvent<HTMLElement> | undefined): void => {
@@ -27,7 +27,6 @@ export default function Post(props: IPostProps) {
 
   const onCancel = (e: React.MouseEvent<HTMLElement> | undefined): void => {
     console.log(e);
-    message.error('Click on No');
   };
 
   return (
@@ -57,7 +56,7 @@ export default function Post(props: IPostProps) {
             <img src={article.author.image} width="46" height="46px" alt="user avatar" />
           </div>
         </div>
-        {authorized && (
+        {fromUser && (
           <div className="post__info-controls">
             <Popconfirm
               className="post__popconfirm"
@@ -72,7 +71,9 @@ export default function Post(props: IPostProps) {
                 Delete
               </Button>
             </Popconfirm>
-            <Button className="post__edit-button">Edit</Button>
+            <Link to={`${AppRoute.Articles}/${article.slug}/edit`}>
+              <Button className="post__edit-button">Edit</Button>
+            </Link>
           </div>
         )}
       </div>

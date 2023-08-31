@@ -1,10 +1,12 @@
-import { FormEvent, MouseEvent, useState } from 'react';
+import { FormEvent, MouseEvent, useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { Input, Typography, Button } from 'antd';
 import './style.css';
 
-import { useAppDispatch } from '../../hooks/hooks';
-import { postNewArticle } from '../../state/api-actions';
+import { useAppDispatch, useAppSelector } from '../../hooks/hooks';
+import { postNewArticle, updateUserArticle, fetchArticle } from '../../state/api-actions';
 import { TNewArticleRequest } from '../../types/articles';
+import { withLoading } from '../../hocs/withLoading';
 
 const { Title } = Typography;
 
@@ -12,15 +14,30 @@ interface ICreateNewPostProps {
   className: string;
   edit?: true;
 }
-export default function CreateNewPost(props: ICreateNewPostProps): JSX.Element {
+
+function CreateNewPost(props: ICreateNewPostProps): JSX.Element {
   const { className, edit: isEdit } = props;
   const dispatch = useAppDispatch();
-
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [body, setBody] = useState('');
-  const [tagList, setTags] = useState<string[]>([]);
+  const article = useAppSelector((state) => state.blog.article);
+  const [title, setTitle] = useState(isEdit && article ? article.title : '');
+  const [description, setDescription] = useState(isEdit && article ? article.description : '');
+  const [body, setBody] = useState(isEdit && article ? article.body : '');
+  const [tagList, setTags] = useState<string[]>(isEdit && article ? article.tagList : []);
   const [newTag, setNewTag] = useState('');
+  const { name } = useParams();
+
+  useEffect(() => {
+    if (name && !article) dispatch(fetchArticle(name));
+  }, [name]);
+
+  useEffect(() => {
+    if (article) {
+      setTitle(article.title);
+      setDescription(article.description);
+      setBody(article.body);
+      setTags(article.tagList);
+    }
+  }, [article]);
 
   function formSubmitHandler(evt: FormEvent<HTMLFormElement>) {
     evt.preventDefault();
@@ -33,11 +50,12 @@ export default function CreateNewPost(props: ICreateNewPostProps): JSX.Element {
       },
     };
 
-    dispatch(postNewArticle(newArticle));
+    if (isEdit && article) dispatch(updateUserArticle({ newArticle, slug: article.slug }));
+    else dispatch(postNewArticle(newArticle));
   }
 
   function addNewTagButtonClickHandler() {
-    setTags((prevTags) => [...prevTags, newTag]);
+    setTags((prevTags) => (newTag ? [...prevTags, newTag] : prevTags));
     setNewTag('');
   }
 
@@ -134,3 +152,4 @@ export default function CreateNewPost(props: ICreateNewPostProps): JSX.Element {
     </section>
   );
 }
+export default withLoading<ICreateNewPostProps & JSX.IntrinsicAttributes>(CreateNewPost);

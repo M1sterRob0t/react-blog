@@ -8,6 +8,7 @@ export enum AppRoute {
   Registration = '/sign-up',
   Profile = '/profile',
   NewArticle = '/new-article',
+  EditArticle = '/articles/:name/edit',
 }
 
 export const errorToastConfig = {
