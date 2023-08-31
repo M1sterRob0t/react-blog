@@ -8,6 +8,7 @@ import { postNewArticle, updateUserArticle, fetchArticle } from '../../state/api
 import { TNewArticleRequest } from '../../types/articles';
 import { withLoading } from '../../hocs/withLoading';
 import { withUpdate } from '../../hocs/withUpdate';
+import { withRedirect } from '../../hocs/withRedirect';
 
 const { Title } = Typography;
 
@@ -154,4 +155,4 @@ function CreateNewPost(props: ICreateNewPostProps): JSX.Element {
     </section>
   );
 }
-export default withUpdate(withLoading<ICreateNewPostProps & JSX.IntrinsicAttributes>(CreateNewPost));
+export default withRedirect(withUpdate(withLoading<ICreateNewPostProps & JSX.IntrinsicAttributes>(CreateNewPost)));
