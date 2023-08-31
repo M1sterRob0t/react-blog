@@ -1,7 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
 
-import type { TArticle, TArticlesResponse, TArticleResponse } from '../types/articles';
+import type { TArticle, TArticlesResponse, TArticleResponse, TNewArticleRequest } from '../types/articles';
 import type { TNewUserRequest, TUserInfo, TNewUser, TUserLoginRequest, TUserEditRequest } from '../types/users';
 import { POSTS_PER_PAGE, errorToastConfig, successToastConfig } from '../constants';
 
@@ -128,27 +128,15 @@ export const postUpdatedUser = createAsyncThunk(
       dispatch(setErrorAction(error));
       return Promise.reject();
     } else {
-      const errorMessage = `Status: ${response.status}. ${response.statusText}`;
+      const errorMessage = `Status: ${response.status}. ${data.errors.message}.`;
       toast(errorMessage, errorToastConfig);
       return Promise.reject();
     }
   }
 );
 
-type TNewArticle = {
-  title: string;
-  description: string;
-  body: string;
-  tags: string[];
-};
-
-type TNewArticleRequest = {
-  article: TNewArticle;
-};
-
 export const postNewArticle = createAsyncThunk('blog/postNewArticle', async (newArticle: TNewArticleRequest) => {
   const authToken = getUserInfo().token;
-
   const options = {
     method: 'POST',
     headers: {
@@ -161,6 +149,12 @@ export const postNewArticle = createAsyncThunk('blog/postNewArticle', async (new
 
   const response = await fetch(`${BASE_URL}${Endpoint.Articles}`, options);
   const data = await response.json();
-
-  return data;
+  if (response.status === 200) {
+    toast('The article has been successfully created!', successToastConfig);
+    return data;
+  } else {
+    const errorMessage = `Status: ${response.status}. ${data.errors.message}.`;
+    toast(errorMessage, errorToastConfig);
+    return Promise.reject();
+  }
 });

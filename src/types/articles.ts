@@ -24,3 +24,14 @@ export type TArticlesResponse = {
 export type TArticleResponse = {
   article: TArticle;
 };
+
+export type TNewArticle = {
+  title: string;
+  description: string;
+  body: string;
+  tagList: string[];
+};
+
+export type TNewArticleRequest = {
+  article: TNewArticle;
+};
