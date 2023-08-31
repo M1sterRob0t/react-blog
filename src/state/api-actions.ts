@@ -5,7 +5,7 @@ import type { TArticle, TArticlesResponse, TArticleResponse, TNewArticleRequest 
 import type { TNewUserRequest, TUserInfo, TNewUser, TUserLoginRequest, TUserEditRequest } from '../types/users';
 import { POSTS_PER_PAGE, errorToastConfig, successToastConfig } from '../constants';
 
-import { setErrorAction } from './reducer';
+import { clearArticleAction, setErrorAction } from './reducer';
 import { getUserInfo } from './userInfo';
 
 const BASE_URL = 'https://blog.kata.academy/api';
@@ -151,7 +151,7 @@ export const postNewArticle = createAsyncThunk('blog/postNewArticle', async (new
   const data = await response.json();
   if (response.status === 200) {
     toast('The article has been successfully created!', successToastConfig);
-    return data;
+    return data.article;
   } else {
     const errorMessage = `Status: ${response.status}. ${data.errors.message}.`;
     toast(errorMessage, errorToastConfig);
@@ -183,7 +183,7 @@ export const updateUserArticle = createAsyncThunk(
 
     if (response.status === 200) {
       toast('The article has been successfully updated!', successToastConfig);
-      return data;
+      return data.article;
     } else {
       const errorMessage = `Status: ${response.status}. ${data.errors.message}.`;
       toast(errorMessage, errorToastConfig);
@@ -191,3 +191,25 @@ export const updateUserArticle = createAsyncThunk(
     }
   }
 );
+
+export const deleteUserArticle = createAsyncThunk('blog/deleteUserArticle', async (slug: string, { dispatch }) => {
+  const authToken = getUserInfo().token;
+  const options = {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json;charset=utf-8',
+      Authorization: `Token ${authToken}`,
+      accept: 'application/json',
+    },
+  };
+
+  const response = await fetch(`${BASE_URL}${Endpoint.Articles}/${slug}`, options);
+  if (response.status === 200 || response.status === 204) {
+    toast('The article has been successfully deleted!', successToastConfig);
+    dispatch(clearArticleAction());
+  } else {
+    const errorMessage = `Status: ${response.status}. ${response.statusText}.`;
+    toast(errorMessage, errorToastConfig);
+    return Promise.reject();
+  }
+});

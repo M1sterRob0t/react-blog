@@ -115,10 +115,12 @@ function CreateNewPost(props: ICreateNewPostProps): JSX.Element {
           {tagList.map((tag) => (
             <div className="create-new-post__tag-item" key={tag}>
               <Input
+                style={{ color: 'rgba(0, 0, 0, 0.88)', backgroundColor: 'white' }}
                 className="create-new-post__input create-new-post__input--tag"
                 placeholder="Tag"
                 value={tag}
                 name={tag}
+                disabled
               />
               <Button
                 className="create-new-post__delete-tag-button"

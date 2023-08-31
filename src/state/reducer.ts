@@ -12,6 +12,7 @@ import {
   postUpdatedUser,
   postNewArticle,
   updateUserArticle,
+  deleteUserArticle,
 } from './api-actions';
 import { getUserInfo, saveUserInfo, removeUserInfo } from './userInfo';
 
@@ -132,6 +133,18 @@ export const blogSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(updateUserArticle.rejected, (state) => {
+        state.isUpdated = false;
+        state.isLoading = false;
+      }) // deleteUserArticle
+      .addCase(deleteUserArticle.pending, (state) => {
+        state.isUpdated = false;
+        state.isLoading = true;
+      })
+      .addCase(deleteUserArticle.fulfilled, (state) => {
+        state.isUpdated = true;
+        state.isLoading = false;
+      })
+      .addCase(deleteUserArticle.rejected, (state) => {
         state.isUpdated = false;
         state.isLoading = false;
       });

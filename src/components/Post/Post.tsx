@@ -1,12 +1,14 @@
 import { Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import { HeartOutlined, HeartFilled } from '@ant-design/icons';
-import { Tag, Button, message, Popconfirm } from 'antd';
+import { Tag, Button, Popconfirm } from 'antd';
 import { format } from 'date-fns';
 
 import { AppRoute } from '../../constants';
 import type { TArticle } from '../../types/articles';
 import './style.css';
+import { useAppDispatch } from '../../hooks/hooks';
+import { deleteUserArticle } from '../../state/api-actions';
 
 const DATE_FROMAT = 'MMMM 	d, yyy';
 
@@ -18,15 +20,11 @@ interface IPostProps {
 
 export default function Post(props: IPostProps) {
   const { full, fromUser, article } = props;
+  const dispatch = useAppDispatch();
   const date = format(new Date(article.createdAt), DATE_FROMAT);
 
-  const onConfirm = (e: React.MouseEvent<HTMLElement> | undefined): void => {
-    console.log(e);
-    message.success('Click on Yes');
-  };
-
-  const onCancel = (e: React.MouseEvent<HTMLElement> | undefined): void => {
-    console.log(e);
+  const onConfirm = (): void => {
+    dispatch(deleteUserArticle(article.slug));
   };
 
   return (
@@ -62,7 +60,6 @@ export default function Post(props: IPostProps) {
               className="post__popconfirm"
               title="Are you sure to delete this article?"
               onConfirm={onConfirm}
-              onCancel={onCancel}
               okText="Yes"
               cancelText="No"
               placement="rightTop"

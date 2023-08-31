@@ -6,8 +6,9 @@ import Post from '../Post';
 import Spinner from '../Spinner';
 import { fetchArticle } from '../../state/api-actions';
 import Error from '../Error';
+import { withUpdate } from '../../hocs/withUpdate';
 
-export default function PostFull(): JSX.Element {
+function PostFull(): JSX.Element {
   const dispatch = useAppDispatch();
   const article = useAppSelector((state) => state.blog.article);
   const user = useAppSelector((state) => state.blog.user);
@@ -24,3 +25,5 @@ export default function PostFull(): JSX.Element {
   if (isLoading || !article) return <Spinner />;
   return <Post article={article} full fromUser={isFromUser} />;
 }
+
+export default withUpdate(PostFull);
