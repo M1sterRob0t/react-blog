@@ -43,12 +43,16 @@ export const blogSlice = createSlice({
     clearUpdatedStatusAction: (state: TBlogState) => {
       state.isUpdated = false;
     },
+    clearArticleAction: (state: TBlogState) => {
+      state.article = null;
+    },
   },
 
   extraReducers: (builder) => {
     builder // fetchArticles
       .addCase(fetchArticles.pending, (state) => {
         state.isError = false;
+        state.isUpdated = false;
         state.isLoading = true;
       })
       .addCase(fetchArticles.fulfilled, (state, action) => {
@@ -61,6 +65,7 @@ export const blogSlice = createSlice({
       }) // fetchArticle
       .addCase(fetchArticle.pending, (state) => {
         state.isError = false;
+        state.isUpdated = false;
         state.isLoading = true;
       })
       .addCase(fetchArticle.fulfilled, (state, action) => {
@@ -107,9 +112,12 @@ export const blogSlice = createSlice({
         state.isLoading = false;
       }) // postNewArticle
       .addCase(postNewArticle.pending, (state) => {
+        state.isUpdated = false;
         state.isLoading = true;
       })
-      .addCase(postNewArticle.fulfilled, (state) => {
+      .addCase(postNewArticle.fulfilled, (state, action) => {
+        state.article = action.payload;
+        state.isUpdated = true;
         state.isLoading = false;
       })
       .addCase(postNewArticle.rejected, (state) => {
@@ -130,5 +138,6 @@ export const blogSlice = createSlice({
   },
 });
 
-export const { clearErrorAction, setErrorAction, logoutAction, clearUpdatedStatusAction } = blogSlice.actions;
+export const { clearErrorAction, setErrorAction, logoutAction, clearUpdatedStatusAction, clearArticleAction } =
+  blogSlice.actions;
 export default blogSlice.reducer;

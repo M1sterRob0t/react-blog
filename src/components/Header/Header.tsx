@@ -4,7 +4,7 @@ import { Button } from 'antd';
 
 import { AppRoute } from '../../constants';
 import { useAppDispatch, useAppSelector } from '../../hooks/hooks';
-import { logoutAction, setErrorAction } from '../../state/reducer';
+import { logoutAction, setErrorAction, clearArticleAction } from '../../state/reducer';
 
 import defaultAvatar from './images/default-avatar.png';
 
@@ -29,7 +29,9 @@ export default function Header(props: IHeaderProps): JSX.Element {
         {user ? (
           <div className="header__auth-user">
             <Link to={AppRoute.NewArticle}>
-              <Button className="header__create-article">Create article</Button>
+              <Button className="header__create-article" onClick={() => dispatch(clearArticleAction())}>
+                Create article
+              </Button>
             </Link>
             <div className="header__user-profile">
               <Link to={AppRoute.Profile} className="header__user-name">

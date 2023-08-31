@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from '../../hooks/hooks';
 import { postNewArticle, updateUserArticle, fetchArticle } from '../../state/api-actions';
 import { TNewArticleRequest } from '../../types/articles';
 import { withLoading } from '../../hocs/withLoading';
+import { withUpdate } from '../../hocs/withUpdate';
 
 const { Title } = Typography;
 
@@ -19,6 +20,7 @@ function CreateNewPost(props: ICreateNewPostProps): JSX.Element {
   const { className, edit: isEdit } = props;
   const dispatch = useAppDispatch();
   const article = useAppSelector((state) => state.blog.article);
+
   const [title, setTitle] = useState(isEdit && article ? article.title : '');
   const [description, setDescription] = useState(isEdit && article ? article.description : '');
   const [body, setBody] = useState(isEdit && article ? article.body : '');
@@ -27,16 +29,14 @@ function CreateNewPost(props: ICreateNewPostProps): JSX.Element {
   const { name } = useParams();
 
   useEffect(() => {
-    if (name && !article) dispatch(fetchArticle(name));
+    if (name && !article && isEdit) dispatch(fetchArticle(name));
   }, [name]);
 
   useEffect(() => {
-    if (article) {
-      setTitle(article.title);
-      setDescription(article.description);
-      setBody(article.body);
-      setTags(article.tagList);
-    }
+    setTitle(article?.title || '');
+    setDescription(article?.description || '');
+    setBody(article?.body || '');
+    setTags(article?.tagList || []);
   }, [article]);
 
   function formSubmitHandler(evt: FormEvent<HTMLFormElement>) {
@@ -152,4 +152,4 @@ function CreateNewPost(props: ICreateNewPostProps): JSX.Element {
     </section>
   );
 }
-export default withLoading<ICreateNewPostProps & JSX.IntrinsicAttributes>(CreateNewPost);
+export default withUpdate(withLoading<ICreateNewPostProps & JSX.IntrinsicAttributes>(CreateNewPost));
