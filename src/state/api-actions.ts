@@ -1,11 +1,11 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
 
-import type { TArticle, TArticlesResponse, TArticleResponse } from '../types/articles';
+import type { TArticle, TArticlesResponse, TArticleResponse, TNewArticleRequest } from '../types/articles';
 import type { TNewUserRequest, TUserInfo, TNewUser, TUserLoginRequest, TUserEditRequest } from '../types/users';
 import { POSTS_PER_PAGE, errorToastConfig, successToastConfig } from '../constants';
 
-import { setErrorAction } from './reducer';
+import { clearArticleAction, setErrorAction } from './reducer';
 import { getUserInfo } from './userInfo';
 
 const BASE_URL = 'https://blog.kata.academy/api';
@@ -99,12 +99,12 @@ export const requireLogin = createAsyncThunk('blog/requireLogin', async (user: T
 export const postUpdatedUser = createAsyncThunk(
   'blog/postUpdatedUser',
   async (updatedUser: TUserEditRequest, { dispatch }) => {
-    const authToken = getUserInfo()?.token;
+    const authToken = getUserInfo().token;
     const options = {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json;charset=utf-8',
-        Authorization: `Token ${authToken || ''}`,
+        Authorization: `Token ${authToken}`,
         accept: 'application/json',
       },
       body: JSON.stringify(updatedUser),
@@ -128,9 +128,88 @@ export const postUpdatedUser = createAsyncThunk(
       dispatch(setErrorAction(error));
       return Promise.reject();
     } else {
-      const errorMessage = `Status: ${response.status}. ${response.statusText}`;
+      const errorMessage = `Status: ${response.status}. ${data.errors.message}.`;
       toast(errorMessage, errorToastConfig);
       return Promise.reject();
     }
   }
 );
+
+export const postNewArticle = createAsyncThunk('blog/postNewArticle', async (newArticle: TNewArticleRequest) => {
+  const authToken = getUserInfo().token;
+  const options = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json;charset=utf-8',
+      Authorization: `Token ${authToken}`,
+      accept: 'application/json',
+    },
+    body: JSON.stringify(newArticle),
+  };
+
+  const response = await fetch(`${BASE_URL}${Endpoint.Articles}`, options);
+  const data = await response.json();
+  if (response.status === 200) {
+    toast('The article has been successfully created!', successToastConfig);
+    return data.article;
+  } else {
+    const errorMessage = `Status: ${response.status}. ${data.errors.message}.`;
+    toast(errorMessage, errorToastConfig);
+    return Promise.reject();
+  }
+});
+
+interface IUpdateUserArticle {
+  newArticle: TNewArticleRequest;
+  slug: string;
+}
+
+export const updateUserArticle = createAsyncThunk(
+  'blog/updateUserArticle',
+  async ({ newArticle, slug }: IUpdateUserArticle) => {
+    const authToken = getUserInfo().token;
+    const options = {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json;charset=utf-8',
+        Authorization: `Token ${authToken}`,
+        accept: 'application/json',
+      },
+      body: JSON.stringify(newArticle),
+    };
+
+    const response = await fetch(`${BASE_URL}${Endpoint.Articles}/${slug}`, options);
+    const data = await response.json();
+
+    if (response.status === 200) {
+      toast('The article has been successfully updated!', successToastConfig);
+      return data.article;
+    } else {
+      const errorMessage = `Status: ${response.status}. ${data.errors.message}.`;
+      toast(errorMessage, errorToastConfig);
+      return Promise.reject();
+    }
+  }
+);
+
+export const deleteUserArticle = createAsyncThunk('blog/deleteUserArticle', async (slug: string, { dispatch }) => {
+  const authToken = getUserInfo().token;
+  const options = {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json;charset=utf-8',
+      Authorization: `Token ${authToken}`,
+      accept: 'application/json',
+    },
+  };
+
+  const response = await fetch(`${BASE_URL}${Endpoint.Articles}/${slug}`, options);
+  if (response.status === 200 || response.status === 204) {
+    toast('The article has been successfully deleted!', successToastConfig);
+    dispatch(clearArticleAction());
+  } else {
+    const errorMessage = `Status: ${response.status}. ${response.statusText}.`;
+    toast(errorMessage, errorToastConfig);
+    return Promise.reject();
+  }
+});

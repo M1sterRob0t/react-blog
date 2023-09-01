@@ -38,6 +38,7 @@
 }
 
 .post__tegs-list {
+  max-width: 675px;
   margin-bottom: 5px;
 }
 
@@ -129,14 +130,17 @@
   margin: 0 auto;
 }
 
+.post--full .post__desc {
+  max-width: 675px;
+  margin-bottom: 50px;
+}
+
 .post--full .post__tegs-list {
   margin-bottom: 15px;
 }
 
 .post__body {
   color: #404040;
-  
-  margin-top: 25px;
 }
 
 .post__body-main-title {

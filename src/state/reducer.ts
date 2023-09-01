@@ -4,7 +4,16 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import type { TNewUser } from '../types/users';
 import type { TBlogState } from '../types/states';
 
-import { fetchArticles, fetchArticle, postNewUser, requireLogin, postUpdatedUser } from './api-actions';
+import {
+  fetchArticles,
+  fetchArticle,
+  postNewUser,
+  requireLogin,
+  postUpdatedUser,
+  postNewArticle,
+  updateUserArticle,
+  deleteUserArticle,
+} from './api-actions';
 import { getUserInfo, saveUserInfo, removeUserInfo } from './userInfo';
 
 const initialState: TBlogState = {
@@ -35,12 +44,16 @@ export const blogSlice = createSlice({
     clearUpdatedStatusAction: (state: TBlogState) => {
       state.isUpdated = false;
     },
+    clearArticleAction: (state: TBlogState) => {
+      state.article = null;
+    },
   },
 
   extraReducers: (builder) => {
     builder // fetchArticles
       .addCase(fetchArticles.pending, (state) => {
         state.isError = false;
+        state.isUpdated = false;
         state.isLoading = true;
       })
       .addCase(fetchArticles.fulfilled, (state, action) => {
@@ -53,6 +66,7 @@ export const blogSlice = createSlice({
       }) // fetchArticle
       .addCase(fetchArticle.pending, (state) => {
         state.isError = false;
+        state.isUpdated = false;
         state.isLoading = true;
       })
       .addCase(fetchArticle.fulfilled, (state, action) => {
@@ -97,9 +111,46 @@ export const blogSlice = createSlice({
       .addCase(postUpdatedUser.rejected, (state) => {
         state.isUpdated = false;
         state.isLoading = false;
+      }) // postNewArticle
+      .addCase(postNewArticle.pending, (state) => {
+        state.isUpdated = false;
+        state.isLoading = true;
+      })
+      .addCase(postNewArticle.fulfilled, (state, action) => {
+        state.article = action.payload;
+        state.isUpdated = true;
+        state.isLoading = false;
+      })
+      .addCase(postNewArticle.rejected, (state) => {
+        state.isLoading = false;
+      }) // editUserArticle
+      .addCase(updateUserArticle.pending, (state) => {
+        state.isUpdated = false;
+        state.isLoading = true;
+      })
+      .addCase(updateUserArticle.fulfilled, (state) => {
+        state.isUpdated = true;
+        state.isLoading = false;
+      })
+      .addCase(updateUserArticle.rejected, (state) => {
+        state.isUpdated = false;
+        state.isLoading = false;
+      }) // deleteUserArticle
+      .addCase(deleteUserArticle.pending, (state) => {
+        state.isUpdated = false;
+        state.isLoading = true;
+      })
+      .addCase(deleteUserArticle.fulfilled, (state) => {
+        state.isUpdated = true;
+        state.isLoading = false;
+      })
+      .addCase(deleteUserArticle.rejected, (state) => {
+        state.isUpdated = false;
+        state.isLoading = false;
       });
   },
 });
 
-export const { clearErrorAction, setErrorAction, logoutAction, clearUpdatedStatusAction } = blogSlice.actions;
+export const { clearErrorAction, setErrorAction, logoutAction, clearUpdatedStatusAction, clearArticleAction } =
+  blogSlice.actions;
 export default blogSlice.reducer;

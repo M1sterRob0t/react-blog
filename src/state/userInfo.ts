@@ -2,10 +2,9 @@ import { TUserInfo } from '../types/users';
 
 const USER_INFO_KEY_NAME = 'realworld-blog-userinfo';
 
-export const getUserInfo = (): TUserInfo | null => {
+export const getUserInfo = (): TUserInfo => {
   const userInfo = localStorage.getItem(USER_INFO_KEY_NAME) as string;
-  if (userInfo) return JSON.parse(userInfo) as TUserInfo;
-  else return null;
+  return JSON.parse(userInfo);
 };
 
 export const saveUserInfo = (userInfo: TUserInfo): void => {
