@@ -13,6 +13,8 @@ import {
   postNewArticle,
   updateUserArticle,
   deleteUserArticle,
+  postLikeToArticle,
+  deleteLikeFromArticle,
 } from './api-actions';
 import { getUserInfo, saveUserInfo, removeUserInfo } from './userInfo';
 
@@ -23,7 +25,7 @@ const initialState: TBlogState = {
   isError: false,
   isUpdated: false,
   user: getUserInfo(),
-  error: null,
+  serverError: null,
 };
 
 export const blogSlice = createSlice({
@@ -35,7 +37,7 @@ export const blogSlice = createSlice({
       state.isError = false;
     },
     setErrorAction: (state: TBlogState, action: PayloadAction<TNewUser | null>) => {
-      state.error = action.payload;
+      state.serverError = action.payload;
     },
     logoutAction: (state: TBlogState) => {
       state.user = null;
@@ -52,8 +54,8 @@ export const blogSlice = createSlice({
   extraReducers: (builder) => {
     builder // fetchArticles
       .addCase(fetchArticles.pending, (state) => {
-        state.isError = false;
         state.isUpdated = false;
+        state.isError = false;
         state.isLoading = true;
       })
       .addCase(fetchArticles.fulfilled, (state, action) => {
@@ -65,8 +67,8 @@ export const blogSlice = createSlice({
         state.isError = true;
       }) // fetchArticle
       .addCase(fetchArticle.pending, (state) => {
-        state.isError = false;
         state.isUpdated = false;
+        state.isError = false;
         state.isLoading = true;
       })
       .addCase(fetchArticle.fulfilled, (state, action) => {
@@ -78,6 +80,7 @@ export const blogSlice = createSlice({
         state.isError = true;
       }) // postNewUser
       .addCase(postNewUser.pending, (state) => {
+        state.isUpdated = false;
         state.isLoading = true;
       })
       .addCase(postNewUser.fulfilled, (state, action) => {
@@ -89,6 +92,7 @@ export const blogSlice = createSlice({
         state.isLoading = false;
       }) // requireLogin
       .addCase(requireLogin.pending, (state) => {
+        state.isUpdated = false;
         state.isLoading = true;
       })
       .addCase(requireLogin.fulfilled, (state, action) => {
@@ -100,6 +104,7 @@ export const blogSlice = createSlice({
         state.isLoading = false;
       }) // postUpdatedUser
       .addCase(postUpdatedUser.pending, (state) => {
+        state.isUpdated = false;
         state.isLoading = true;
       })
       .addCase(postUpdatedUser.fulfilled, (state, action) => {
@@ -109,7 +114,6 @@ export const blogSlice = createSlice({
         saveUserInfo(action.payload);
       })
       .addCase(postUpdatedUser.rejected, (state) => {
-        state.isUpdated = false;
         state.isLoading = false;
       }) // postNewArticle
       .addCase(postNewArticle.pending, (state) => {
@@ -133,7 +137,6 @@ export const blogSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(updateUserArticle.rejected, (state) => {
-        state.isUpdated = false;
         state.isLoading = false;
       }) // deleteUserArticle
       .addCase(deleteUserArticle.pending, (state) => {
@@ -145,8 +148,32 @@ export const blogSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(deleteUserArticle.rejected, (state) => {
-        state.isUpdated = false;
         state.isLoading = false;
+      }) // postLikeToArticle
+      .addCase(postLikeToArticle.pending, (state) => {
+        state.isUpdated = false;
+        state.isError = false;
+      })
+      .addCase(postLikeToArticle.fulfilled, (state, action) => {
+        const updatedArticle = action.payload;
+        const index = state.articles.findIndex((article) => article.slug === updatedArticle.slug);
+        state.articles = [...state.articles.slice(0, index), updatedArticle, ...state.articles.slice(index + 1)];
+        state.article = action.payload;
+      })
+      .addCase(postLikeToArticle.rejected, (state) => {
+        state.isError = true;
+      }) // deleteLikeFromArticle
+      .addCase(deleteLikeFromArticle.pending, (state) => {
+        state.isError = false;
+      })
+      .addCase(deleteLikeFromArticle.fulfilled, (state, action) => {
+        const updatedArticle = action.payload;
+        const index = state.articles.findIndex((article) => article.slug === updatedArticle.slug);
+        state.articles = [...state.articles.slice(0, index), updatedArticle, ...state.articles.slice(index + 1)];
+        state.article = action.payload;
+      })
+      .addCase(deleteLikeFromArticle.rejected, (state) => {
+        state.isError = true;
       });
   },
 });

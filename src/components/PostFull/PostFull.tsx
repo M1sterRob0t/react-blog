@@ -5,8 +5,8 @@ import { useAppDispatch, useAppSelector } from '../../hooks/hooks';
 import Post from '../Post';
 import Spinner from '../Spinner';
 import { fetchArticle } from '../../state/api-actions';
+import { withRedirect } from '../../hocs/withRedirect';
 import Error from '../Error';
-import { withUpdate } from '../../hocs/withUpdate';
 
 function PostFull(): JSX.Element {
   const dispatch = useAppDispatch();
@@ -19,11 +19,11 @@ function PostFull(): JSX.Element {
 
   useEffect(() => {
     if (name) dispatch(fetchArticle(name));
-  }, [name]);
+  }, []);
 
   if (isError) return <Error />;
   if (isLoading || !article) return <Spinner />;
   return <Post article={article} full fromUser={isFromUser} />;
 }
 
-export default withUpdate(PostFull);
+export default withRedirect(PostFull);

@@ -8,7 +8,7 @@ export type TBlogState = {
   isError: boolean;
   isUpdated: boolean;
   user: TUserInfo | null;
-  error: TNewUser | null;
+  serverError: TNewUser | null;
 };
 
 export type TState = {

@@ -19,7 +19,7 @@ enum Endpoint {
 function formatArticles(articles: TArticle[]): TArticle[] {
   const articlesWithFilteredTags: TArticle[] = articles.map((article: TArticle) => {
     const tagsSet = new Set(article.tagList);
-    const filteredTags = Array.from(tagsSet.keys()).filter((tag) => typeof tag === 'string');
+    const filteredTags = Array.from(tagsSet.keys()).filter((tag) => typeof tag === 'string' && tag.trim() !== '');
     return { ...article, tagList: filteredTags };
   });
 
@@ -28,8 +28,17 @@ function formatArticles(articles: TArticle[]): TArticle[] {
 
 export const fetchArticles = createAsyncThunk('blog/fetchArticles', async (page: number) => {
   const offset = page === 1 ? 0 : page * POSTS_PER_PAGE - POSTS_PER_PAGE;
+  const authToken = getUserInfo()?.token || '';
+  const options = {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json;charset=utf-8',
+      Authorization: `Token ${authToken}`,
+      accept: 'application/json',
+    },
+  };
 
-  const response = await fetch(`${BASE_URL}${Endpoint.Articles}?offset=${offset}&limit=${POSTS_PER_PAGE}`);
+  const response = await fetch(`${BASE_URL}${Endpoint.Articles}?offset=${offset}&limit=${POSTS_PER_PAGE}`, options);
   const data: TArticlesResponse = await response.json();
   const articles: TArticle[] = formatArticles(data.articles);
 
@@ -37,7 +46,17 @@ export const fetchArticles = createAsyncThunk('blog/fetchArticles', async (page:
 });
 
 export const fetchArticle = createAsyncThunk('blog/fetchArticle', async (name: string) => {
-  const response = await fetch(`${BASE_URL}${Endpoint.Articles}/${name}`);
+  const authToken = getUserInfo()?.token || '';
+  const options = {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json;charset=utf-8',
+      Authorization: `Token ${authToken}`,
+      accept: 'application/json',
+    },
+  };
+
+  const response = await fetch(`${BASE_URL}${Endpoint.Articles}/${name}`, options);
   const data: TArticleResponse = await response.json();
   const article: TArticle = formatArticles([data.article])[0];
 
@@ -212,4 +231,39 @@ export const deleteUserArticle = createAsyncThunk('blog/deleteUserArticle', asyn
     toast(errorMessage, errorToastConfig);
     return Promise.reject();
   }
+});
+
+export const postLikeToArticle = createAsyncThunk('blog/postLikeToArticle', async (slug: string) => {
+  const authToken = getUserInfo().token;
+  const options = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json;charset=utf-8',
+      Authorization: `Token ${authToken}`,
+      accept: 'application/json',
+    },
+  };
+  const response = await fetch(`${BASE_URL}${Endpoint.Articles}/${slug}/favorite`, options);
+  const data: TArticleResponse = await response.json();
+  const article: TArticle = formatArticles([data.article])[0];
+
+  return article;
+});
+
+export const deleteLikeFromArticle = createAsyncThunk('blog/deleteLikeFromArticle', async (slug: string) => {
+  const authToken = getUserInfo().token;
+  const options = {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json;charset=utf-8',
+      Authorization: `Token ${authToken}`,
+      accept: 'application/json',
+    },
+  };
+
+  const response = await fetch(`${BASE_URL}${Endpoint.Articles}/${slug}/favorite`, options);
+  const data: TArticleResponse = await response.json();
+  const article: TArticle = formatArticles([data.article])[0];
+
+  return article;
 });

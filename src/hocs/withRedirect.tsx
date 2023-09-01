@@ -8,6 +8,7 @@ export function withRedirect<TProps extends JSX.IntrinsicAttributes>(
 ): React.FC<TProps> {
   return function WithRedirectComponent(props: TProps) {
     const user = useAppSelector((state) => state.blog.user);
+    const isUpdated = useAppSelector((state) => state.blog.isUpdated);
     const isAuthorized = user ? true : false;
     const { pathname } = useLocation();
     const { name } = useParams();
@@ -15,8 +16,9 @@ export function withRedirect<TProps extends JSX.IntrinsicAttributes>(
     const isPrivateRoute =
       pathname === AppRoute.NewArticle || pathname === AppRoute.Profile || pathname === appRouteEditArticle;
 
-    if (isAuthorized && pathname === AppRoute.Login) return <Navigate to={AppRoute.Articles} />;
-    else if (isAuthorized && pathname === AppRoute.Registration) return <Navigate to={AppRoute.Articles} />;
+    if (isUpdated) return <Navigate to={AppRoute.Root} />;
+    else if (isAuthorized && pathname === AppRoute.Login) return <Navigate to={AppRoute.Root} />;
+    else if (isAuthorized && pathname === AppRoute.Registration) return <Navigate to={AppRoute.Root} />;
     else if (isPrivateRoute && !isAuthorized) return <Navigate to={AppRoute.Login} />;
     else return <Component {...props} />;
   };

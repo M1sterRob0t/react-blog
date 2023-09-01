@@ -10,7 +10,6 @@ import '../style.css';
 import { clearErrorAction } from '../../../state/reducer';
 import { withLoading } from '../../../hocs/withLoading';
 import { withRedirect } from '../../../hocs/withRedirect';
-import { withUpdate } from '../../../hocs/withUpdate';
 
 const EditForm = {
   Username: 'username',
@@ -29,7 +28,7 @@ function EditProfile(props: IEditProfileProps): JSX.Element {
   const dispatch = useAppDispatch();
 
   const user = useAppSelector((state) => state.blog.user);
-  const error = useAppSelector((state) => state.blog.error);
+  const error = useAppSelector((state) => state.blog.serverError);
 
   const editFormDefault = {
     username: user?.username,
@@ -157,4 +156,4 @@ function EditProfile(props: IEditProfileProps): JSX.Element {
   );
 }
 
-export default withUpdate(withRedirect(withLoading<IEditProfileProps & JSX.IntrinsicAttributes>(EditProfile)));
+export default withRedirect(withLoading<IEditProfileProps & JSX.IntrinsicAttributes>(EditProfile));
