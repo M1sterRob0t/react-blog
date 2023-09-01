@@ -7,8 +7,8 @@ import { format } from 'date-fns';
 import { AppRoute } from '../../constants';
 import type { TArticle } from '../../types/articles';
 import './style.css';
-import { useAppDispatch } from '../../hooks/hooks';
-import { deleteUserArticle } from '../../state/api-actions';
+import { useAppDispatch, useAppSelector } from '../../hooks/hooks';
+import { deleteLikeFromArticle, deleteUserArticle, postLikeToArticle } from '../../state/api-actions';
 
 const DATE_FROMAT = 'MMMM 	d, yyy';
 
@@ -21,11 +21,22 @@ interface IPostProps {
 export default function Post(props: IPostProps) {
   const { full, fromUser, article } = props;
   const dispatch = useAppDispatch();
+  const user = useAppSelector((state) => state.blog.user);
   const date = format(new Date(article.createdAt), DATE_FROMAT);
 
-  const onConfirm = (): void => {
+  function deleteButtonConfirmHandler(): void {
     dispatch(deleteUserArticle(article.slug));
-  };
+  }
+
+  function likeButtonClickHandler(): void {
+    if (!user) return;
+
+    if (article.favorited) {
+      dispatch(deleteLikeFromArticle(article.slug));
+    } else {
+      dispatch(postLikeToArticle(article.slug));
+    }
+  }
 
   return (
     <article className={`post ${full && 'post--full'}`}>
@@ -34,7 +45,7 @@ export default function Post(props: IPostProps) {
           {article.title}
         </Link>
         <span className="post__likes">
-          <span className="post__likes-icon-wrapper">
+          <span className="post__likes-icon-wrapper" onClick={likeButtonClickHandler}>
             {article.favorited ? (
               <HeartFilled className="post__likes-icon post__likes-icon--clicked" />
             ) : (
@@ -59,7 +70,7 @@ export default function Post(props: IPostProps) {
             <Popconfirm
               className="post__popconfirm"
               title="Are you sure to delete this article?"
-              onConfirm={onConfirm}
+              onConfirm={deleteButtonConfirmHandler}
               okText="Yes"
               cancelText="No"
               placement="rightTop"

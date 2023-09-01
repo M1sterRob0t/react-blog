@@ -13,6 +13,8 @@ import {
   postNewArticle,
   updateUserArticle,
   deleteUserArticle,
+  postLikeToArticle,
+  deleteLikeFromArticle,
 } from './api-actions';
 import { getUserInfo, saveUserInfo, removeUserInfo } from './userInfo';
 
@@ -147,6 +149,30 @@ export const blogSlice = createSlice({
       .addCase(deleteUserArticle.rejected, (state) => {
         state.isUpdated = false;
         state.isLoading = false;
+      }) // postLikeToArticle
+      .addCase(postLikeToArticle.pending, (state) => {
+        state.isError = false;
+      })
+      .addCase(postLikeToArticle.fulfilled, (state, action) => {
+        const updatedArticle = action.payload;
+        const index = state.articles.findIndex((article) => article.slug === updatedArticle.slug);
+        state.articles = [...state.articles.slice(0, index), updatedArticle, ...state.articles.slice(index + 1)];
+        state.article = action.payload;
+      })
+      .addCase(postLikeToArticle.rejected, (state) => {
+        state.isError = true;
+      }) // deleteLikeFromArticle
+      .addCase(deleteLikeFromArticle.pending, (state) => {
+        state.isError = false;
+      })
+      .addCase(deleteLikeFromArticle.fulfilled, (state, action) => {
+        const updatedArticle = action.payload;
+        const index = state.articles.findIndex((article) => article.slug === updatedArticle.slug);
+        state.articles = [...state.articles.slice(0, index), updatedArticle, ...state.articles.slice(index + 1)];
+        state.article = action.payload;
+      })
+      .addCase(deleteLikeFromArticle.rejected, (state) => {
+        state.isError = true;
       });
   },
 });
