@@ -55,7 +55,7 @@ function CreateNewPost(props: ICreateNewPostProps): JSX.Element {
   }
 
   function addNewTagButtonClickHandler() {
-    setTags((prevTags) => (newTag ? [...prevTags, newTag] : prevTags));
+    setTags((prevTags) => (newTag && !prevTags.includes(newTag) ? [...prevTags, newTag] : prevTags));
     setNewTag('');
   }
 
