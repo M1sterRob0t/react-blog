@@ -1,0 +1,22 @@
+.not-found {
+  width: 100%; 
+  height: 60vh; 
+  text-align: center; 
+  margin-top: 200px;
+}
+
+.not-found__title {
+  display: flex; 
+  justify-content:center;
+  align-items: flex-end;
+}
+
+.not-found__message-main {
+  color: black;
+  font-size: 23px;
+}
+
+.not-found__message-additional { 
+  color: grey; 
+  font-size: 18px;
+}

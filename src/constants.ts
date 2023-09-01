@@ -9,6 +9,7 @@ export enum AppRoute {
   Profile = '/profile',
   NewArticle = '/new-article',
   EditArticle = '/articles/:name/edit',
+  NotFound = '*',
 }
 
 export const errorToastConfig = {

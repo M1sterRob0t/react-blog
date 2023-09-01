@@ -19,7 +19,7 @@ enum Endpoint {
 function formatArticles(articles: TArticle[]): TArticle[] {
   const articlesWithFilteredTags: TArticle[] = articles.map((article: TArticle) => {
     const tagsSet = new Set(article.tagList);
-    const filteredTags = Array.from(tagsSet.keys()).filter((tag) => typeof tag === 'string');
+    const filteredTags = Array.from(tagsSet.keys()).filter((tag) => typeof tag === 'string' && tag.trim() !== '');
     return { ...article, tagList: filteredTags };
   });
 
@@ -46,7 +46,17 @@ export const fetchArticles = createAsyncThunk('blog/fetchArticles', async (page:
 });
 
 export const fetchArticle = createAsyncThunk('blog/fetchArticle', async (name: string) => {
-  const response = await fetch(`${BASE_URL}${Endpoint.Articles}/${name}`);
+  const authToken = getUserInfo()?.token || '';
+  const options = {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json;charset=utf-8',
+      Authorization: `Token ${authToken}`,
+      accept: 'application/json',
+    },
+  };
+
+  const response = await fetch(`${BASE_URL}${Endpoint.Articles}/${name}`, options);
   const data: TArticleResponse = await response.json();
   const article: TArticle = formatArticles([data.article])[0];
 

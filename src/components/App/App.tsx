@@ -11,6 +11,7 @@ import SignUp from '../Modal/SignUp';
 import SignIn from '../Modal/SignIn';
 import EditProfile from '../Modal/EditProfile';
 import CreateNewPost from '../CreateNewPost';
+import NotFound from '../NotFound';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         <Route path={AppRoute.Profile} element={<EditProfile className="app__modal" />} />
         <Route path={AppRoute.NewArticle} element={<CreateNewPost className="app__create-new-post" />} />
         <Route path={AppRoute.EditArticle} element={<CreateNewPost className="app__create-new-post" edit />} />
+        <Route path={AppRoute.NotFound} element={<NotFound />} />
       </Routes>
       <ToastContainer />
     </div>

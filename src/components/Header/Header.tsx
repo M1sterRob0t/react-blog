@@ -21,7 +21,7 @@ export default function Header(props: IHeaderProps): JSX.Element {
   return (
     <header className={`${className} header`}>
       <div className="header__logo">
-        <Link className="header__logo-link" to={AppRoute.Articles} onClick={() => dispatch(setErrorAction(null))}>
+        <Link className="header__logo-link" to={AppRoute.Root} onClick={() => dispatch(setErrorAction(null))}>
           Realworld Blog
         </Link>
       </div>
