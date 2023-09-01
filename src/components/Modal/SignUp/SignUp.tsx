@@ -32,7 +32,7 @@ const { Title } = Typography;
 function SignUp(props: ISignUpProps): JSX.Element {
   const { className } = props;
   const dispatch = useAppDispatch();
-  const error = useAppSelector((state) => state.blog.error);
+  const error = useAppSelector((state) => state.blog.serverError);
   const [formInfo, setFormInfo] = useState(formInfoDefault);
 
   function formSubmitHandler(evt: FormEvent<HTMLFormElement>): void {

@@ -6,7 +6,6 @@ import Post from '../Post';
 import Spinner from '../Spinner';
 import { fetchArticle } from '../../state/api-actions';
 import { withRedirect } from '../../hocs/withRedirect';
-// import { withError } from '../../hocs/withError';
 import Error from '../Error';
 
 function PostFull(): JSX.Element {

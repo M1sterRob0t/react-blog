@@ -28,7 +28,7 @@ function EditProfile(props: IEditProfileProps): JSX.Element {
   const dispatch = useAppDispatch();
 
   const user = useAppSelector((state) => state.blog.user);
-  const error = useAppSelector((state) => state.blog.error);
+  const error = useAppSelector((state) => state.blog.serverError);
 
   const editFormDefault = {
     username: user?.username,
