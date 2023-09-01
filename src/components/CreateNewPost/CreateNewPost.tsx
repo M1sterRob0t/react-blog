@@ -41,6 +41,14 @@ function CreateNewPost(props: ICreateNewPostProps): JSX.Element {
 
   function formSubmitHandler(evt: FormEvent<HTMLFormElement>) {
     evt.preventDefault();
+
+    if (!title.trim() || !description.trim() || !body.trim()) {
+      setDescription(description.trim());
+      setTitle(title.trim());
+      setBody(body.trim());
+      return;
+    }
+
     const newArticle: TNewArticleRequest = {
       article: {
         title,
@@ -55,7 +63,7 @@ function CreateNewPost(props: ICreateNewPostProps): JSX.Element {
   }
 
   function addNewTagButtonClickHandler() {
-    setTags((prevTags) => (newTag && !prevTags.includes(newTag) ? [...prevTags, newTag] : prevTags));
+    setTags((prevTags) => (newTag && !prevTags.includes(newTag) && newTag.trim() ? [...prevTags, newTag] : prevTags));
     setNewTag('');
   }
 
