@@ -1,5 +1,8 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
+import type { TArticlesSuccessResponse } from '../types/articles';
+import { POSTS_PER_PAGE } from '../constants';
+
 enum Endpoint {
   Articles = 'articles',
   Users = 'users',
@@ -12,8 +15,11 @@ export const blogApi = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({ baseUrl: 'https://blog.kata.academy/api' }),
   endpoints: (builder) => ({
-    getArticles: builder.query({
-      query: () => `${Endpoint.Articles}`,
+    getArticles: builder.query<TArticlesSuccessResponse, number>({
+      query: (page) => {
+        const offset = page === 1 ? 0 : page * POSTS_PER_PAGE - POSTS_PER_PAGE;
+        return `${Endpoint.Articles}?offset=${offset}&limit=${POSTS_PER_PAGE}`;
+      },
     }),
   }),
 });

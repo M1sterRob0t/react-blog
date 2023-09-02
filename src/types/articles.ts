@@ -16,9 +16,15 @@ export type TArticle = {
   };
 };
 
-export type TArticlesResponse = {
+export type TArticlesSuccessResponse = {
   articles: TArticle[];
   articlesCount: number;
+};
+
+export type TArticlesErrorResponse = {
+  errors: {
+    body: string[];
+  };
 };
 
 export type TArticleResponse = {
