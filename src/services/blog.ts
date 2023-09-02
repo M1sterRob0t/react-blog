@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-import type { TArticlesSuccessResponse } from '../types/articles';
+import type { TArticleResponse, TArticlesSuccessResponse } from '../types/articles';
 import { POSTS_PER_PAGE } from '../constants';
 
 enum Endpoint {
@@ -21,9 +21,12 @@ export const blogApi = createApi({
         return `${Endpoint.Articles}?offset=${offset}&limit=${POSTS_PER_PAGE}`;
       },
     }),
+    getArticle: builder.query<TArticleResponse, string>({
+      query: (slug) => `${Endpoint.Articles}/${slug}`,
+    }),
   }),
 });
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { useGetArticlesQuery } = blogApi;
+export const { useGetArticlesQuery, useGetArticleQuery } = blogApi;

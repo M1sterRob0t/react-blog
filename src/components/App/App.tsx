@@ -7,6 +7,7 @@ import Posts from '../Posts';
 import './App.css';
 import { AppRoute } from '../../constants';
 import NotFound from '../NotFound';
+import PostFull from '../PostFull';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path={AppRoute.Root} element={<Posts />} />
         <Route path={AppRoute.Articles} element={<Posts />} />
         <Route path={AppRoute.NotFound} element={<NotFound />} />
+        <Route path={AppRoute.Article} element={<PostFull />} />
       </Routes>
       <ToastContainer />
     </div>

@@ -3,12 +3,12 @@ export const MAX_POSTS = 570;
 export enum AppRoute {
   Root = '/',
   Articles = '/articles',
-  Article = '/articles/:name',
+  Article = '/articles/:slug',
   Login = '/sign-in',
   Registration = '/sign-up',
   Profile = '/profile',
   NewArticle = '/new-article',
-  EditArticle = '/articles/:name/edit',
+  EditArticle = '/articles/:slug/edit',
   NotFound = '*',
 }
 
