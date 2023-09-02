@@ -1,0 +1,104 @@
+.modal {
+  position: relative;
+  left: -5px;
+
+  box-sizing: border-box;
+  width: 380px;
+  background-color: #ffffff;
+  padding: 47px 30px 47px 30px;
+  border-radius: 6px;
+}
+
+.modal__title {
+  text-align: center;
+  margin: 0;
+  margin-bottom: 22px !important;
+}
+
+.modal__label {
+  position: relative;
+  display: block;
+  font-size: 14px;
+  letter-spacing: 0.3px;
+  color: #262626;
+
+  margin-bottom: 12px;
+}
+
+.modal__label:last-of-type {
+  margin-bottom: 20px;
+}
+
+.modal__input {
+  box-sizing: border-box;
+  margin-top: 5px;
+  height: 40px;
+
+  font-size: 17px;
+}
+
+.modal__input::placeholder {
+  font-size: 17px;
+}
+
+
+.modal__checkbox-label {
+  display: flex;
+
+  border-top: 1px solid #e8e8e8;
+  font-size: 14px;
+  line-height: 22px;
+  
+  padding-top: 7px;
+  margin-top: 20px;
+  margin-bottom: 22px;
+}
+
+.modal__checkbox {
+  display: block;
+  position: relative;
+  top: 4px;
+
+  width: 16px;
+  height: 16px;
+
+  margin-right: 8px;
+}
+
+.modal__submit {
+  width: 100%;
+  height: 40px;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.modal__message {
+  text-align: center;
+  margin-top: 5px;
+}
+
+.modal__message-text {
+  font-size: 12px;
+  color: #8C8C8C;
+}
+
+.modal__message-link {
+  text-decoration: none;
+  color: #1890FF;
+  margin-left: 4px;
+}
+
+.modal__input--invalid {
+  border: 1px solid #F5222D;
+}
+
+.modal__invalid-message {
+  display: none;
+  color: #F5222D;
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.modal__input--invalid + .modal__invalid-message {
+  display: block;
+}

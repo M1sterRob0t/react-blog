@@ -2,6 +2,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 import type { TArticleResponse, TArticlesSuccessResponse } from '../types/articles';
 import { POSTS_PER_PAGE } from '../constants';
+import { TNewUserRequest, TNewUserResponse } from '../types/users';
 
 enum Endpoint {
   Articles = 'articles',
@@ -24,9 +25,16 @@ export const blogApi = createApi({
     getArticle: builder.query<TArticleResponse, string>({
       query: (slug) => `${Endpoint.Articles}/${slug}`,
     }),
+    postNewUser: builder.mutation<TNewUserResponse, TNewUserRequest>({
+      query: (newUser) => ({
+        url: `${Endpoint.Users}`,
+        method: 'POST',
+        body: newUser,
+      }),
+    }),
   }),
 });
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { useGetArticlesQuery, useGetArticleQuery } = blogApi;
+export const { useGetArticlesQuery, useGetArticleQuery, usePostNewUserMutation } = blogApi;
