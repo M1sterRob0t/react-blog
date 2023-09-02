@@ -4,18 +4,21 @@ import { Pagination } from 'antd';
 import { POSTS_PER_PAGE, MAX_POSTS } from '../../constants';
 import { useAppDispatch, useAppSelector } from '../../hooks/hooks';
 import { fetchArticles } from '../../state/api-actions';
-import { withError } from '../../hocs/withError';
+import Error from '../Error';
 
 import PostsList from './PostsList/PostsList';
 import './style.css';
 
 function Posts(): JSX.Element {
   const articles = useAppSelector((state) => state.blog.articles);
+  const isError = useAppSelector((state) => state.blog.isError);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     dispatch(fetchArticles(1));
   }, []);
+
+  if (isError) return <Error />;
 
   return (
     <div className="posts">
@@ -30,4 +33,4 @@ function Posts(): JSX.Element {
     </div>
   );
 }
-export default withError(Posts);
+export default Posts;

@@ -4,7 +4,7 @@ import { Button } from 'antd';
 
 import { AppRoute } from '../../constants';
 import { useAppDispatch, useAppSelector } from '../../hooks/hooks';
-import { logoutAction, setErrorAction, clearArticleAction } from '../../state/reducer';
+import { logoutAction, clearArticleAction } from '../../state/reducer';
 
 import defaultAvatar from './images/default-avatar.png';
 
@@ -21,7 +21,7 @@ export default function Header(props: IHeaderProps): JSX.Element {
   return (
     <header className={`${className} header`}>
       <div className="header__logo">
-        <Link className="header__logo-link" to={AppRoute.Root} onClick={() => dispatch(setErrorAction(null))}>
+        <Link className="header__logo-link" to={AppRoute.Root}>
           Realworld Blog
         </Link>
       </div>

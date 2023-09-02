@@ -56,7 +56,7 @@ export const fetchArticle = createAsyncThunk('blog/fetchArticle', async (name: s
     },
   };
 
-  const response = await fetch(`${BASE_URL}${Endpoint.Articles}/${name}`, options);
+  const response = await fetch(`${BASE_URL}${Endpoint.Articles}/${name}asd`, options);
   const data: TArticleResponse = await response.json();
   const article: TArticle = formatArticles([data.article])[0];
 
