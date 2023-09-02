@@ -1,25 +1,30 @@
-import { useEffect } from 'react';
 import { Pagination } from 'antd';
 
 import { POSTS_PER_PAGE, MAX_POSTS } from '../../constants';
-import { useAppDispatch, useAppSelector } from '../../hooks/hooks';
-import { fetchArticles } from '../../state/api-actions';
+import { useGetArticlesQuery } from '../../services/blog';
+import Spinner from '../Spinner';
 import Error from '../Error';
+import type { TArticle } from '../../types/articles';
 
-import PostsList from './PostsList/PostsList';
+import PostsList from './PostsList';
 import './style.css';
 
-function Posts(): JSX.Element {
-  const articles = useAppSelector((state) => state.blog.articles);
-  const isError = useAppSelector((state) => state.blog.isError);
-  const dispatch = useAppDispatch();
+function formatArticles(articles: TArticle[]): TArticle[] {
+  const articlesWithFilteredTags: TArticle[] = articles.map((article: TArticle) => {
+    const tagsSet = new Set(article.tagList);
+    const filteredTags = Array.from(tagsSet.keys()).filter((tag) => typeof tag === 'string' && tag.trim() !== '');
+    return { ...article, tagList: filteredTags };
+  });
 
-  useEffect(() => {
-    dispatch(fetchArticles(1));
-  }, []);
+  return articlesWithFilteredTags;
+}
+
+function Posts(): JSX.Element {
+  const { data, isError, isLoading } = useGetArticlesQuery({});
+  const articles = data ? formatArticles(data.articles) : [];
 
   if (isError) return <Error />;
-
+  if (isLoading) return <Spinner />;
   return (
     <div className="posts">
       <PostsList articles={articles} />
@@ -27,7 +32,7 @@ function Posts(): JSX.Element {
         className="posts__pagination"
         pageSize={POSTS_PER_PAGE}
         total={MAX_POSTS}
-        onChange={(page) => dispatch(fetchArticles(page))}
+        onChange={(page) => console.log(page)}
         showSizeChanger={false}
       />
     </div>

@@ -1,6 +1,5 @@
 import '../style.css';
 import Post from '../../Post';
-import { withLoading } from '../../../hocs/withLoading';
 import { TArticle } from '../../../types/articles';
 
 interface IPostsList {
@@ -19,4 +18,4 @@ function PostsList({ articles }: IPostsList): JSX.Element {
   );
 }
 
-export default withLoading<IPostsList & JSX.IntrinsicAttributes>(PostsList);
+export default PostsList;
