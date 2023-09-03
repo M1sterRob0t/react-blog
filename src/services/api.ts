@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-import type { TArticleResponse, TArticlesSuccessResponse } from '../types/articles';
+import type { TArticleResponse, TArticlesSuccessResponse, TNewArticleRequest } from '../types/articles';
 import { POSTS_PER_PAGE } from '../constants';
 import { TNewUserRequest, TUserResponse, TUserLoginRequest, TUserEditRequest } from '../types/users';
 import type { TRootState } from '../state/store';
@@ -58,6 +58,13 @@ export const api = createApi({
         body: user,
       }),
     }),
+    postNewArticle: builder.mutation<TArticleResponse, TNewArticleRequest>({
+      query: (article) => ({
+        url: Endpoint.Articles,
+        method: 'POST',
+        body: article,
+      }),
+    }),
   }),
 });
 
@@ -67,4 +74,5 @@ export const {
   usePostNewUserMutation,
   usePostExistingUserMutation,
   usePutUpdatedUserMutation,
+  usePostNewArticleMutation,
 } = api;

@@ -11,6 +11,7 @@ import PostFull from '../PostFull';
 import SignUp from '../Modal/SignUp';
 import SignIn from '../Modal/SignIn';
 import EditProfile from '../Modal/EditProfile';
+import CreateNewPost from '../CreateNewPost';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
         <Route path={AppRoute.Registration} element={<SignUp className="app__modal" />} />
         <Route path={AppRoute.Login} element={<SignIn className="app__modal" />} />
         <Route path={AppRoute.Profile} element={<EditProfile className="app__modal" />} />
+        <Route path={AppRoute.NewArticle} element={<CreateNewPost className="app__create-new-post" />} />
       </Routes>
       <ToastContainer />
     </div>
