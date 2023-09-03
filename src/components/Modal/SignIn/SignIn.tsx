@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 import { TUserLoginRequest, TUserLogin } from '../../../types/users';
 import { usePostExistingUserMutation } from '../../../services/api';
 import Spinner from '../../Spinner';
-import { loginAction } from '../../../state/userReducer';
+import { addUserAction } from '../../../state/userReducer';
 import { isFetchBaseQueryError, isErrorWithMessage } from '../../../utils';
 import { AppRoute, errorToastConfig, successToastConfig } from '../../../constants';
 import { useAppDispatch } from '../../../hooks/hooks';
@@ -51,7 +51,7 @@ function SignIn(props: ISignInProps): JSX.Element {
   useEffect(() => {
     if (isSuccess && data) {
       toast('You successfully logged in!', successToastConfig);
-      dispatch(loginAction(data.user));
+      dispatch(addUserAction(data.user));
     }
   }, [isSuccess]);
 

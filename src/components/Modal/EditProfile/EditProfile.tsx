@@ -1,65 +1,71 @@
-import { FormEvent, useState, useEffect } from 'react';
-import { toast } from 'react-toastify';
-import { Link, Navigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
+import { FormEvent, useEffect, useState } from 'react';
 import { Input, Typography, Button } from 'antd';
+import { toast } from 'react-toastify';
 
-import { usePostNewUserMutation } from '../../../services/api';
-import type { TNewUser, TNewUserRequest } from '../../../types/users';
-import type { TServerErrorResponse } from '../../../types/registration';
-import { AppRoute, INPUT_INVALID_CLASS, errorToastConfig, successToastConfig } from '../../../constants';
+import { AppRoute, successToastConfig, errorToastConfig, INPUT_INVALID_CLASS } from '../../../constants';
+import { useAppDispatch, useAppSelector } from '../../../hooks/hooks';
+import '../style.css';
+import { usePutUpdatedUserMutation } from '../../../services/api';
 import Spinner from '../../Spinner';
 import { isFetchBaseQueryError, isErrorWithMessage, processServerError } from '../../../utils';
-import '../style.css';
-import { useAppDispatch } from '../../../hooks/hooks';
 import { addUserAction } from '../../../state/userReducer';
+import type { TUserEditRequest } from '../../../types/users';
+import type { TServerErrorResponse } from '../../../types/registration';
 
-const { Title } = Typography;
-
-const SignUpForm = {
+const EditForm = {
   Username: 'username',
   Email: 'email',
   Password: 'password',
-  RepeatedPassword: 'repeated-password',
-  Agreement: 'agreement',
+  Image: 'image',
 };
 
-const formInfoDefault: TNewUser = {
-  username: '',
-  email: '',
-  password: '',
-};
-
-interface ISignUpProps {
+interface IEditProfileProps {
   className: string;
 }
+const { Title } = Typography;
 
-function SignUp(props: ISignUpProps): JSX.Element {
+function EditProfile(props: IEditProfileProps): JSX.Element {
   const { className } = props;
-  const [formInfo, setFormInfo] = useState(formInfoDefault);
-  const [postNewUser, { error, isError, isSuccess, isLoading, data }] = usePostNewUserMutation();
-  const serverError = processServerError(error);
+  const user = useAppSelector((state) => state.userInfo.user);
   const dispatch = useAppDispatch();
+  const [updateUser, { isLoading, isSuccess, isError, error, data }] = usePutUpdatedUserMutation();
+  const serverError = processServerError(error);
 
-  function formSubmitHandler(evt: FormEvent<HTMLFormElement>): void {
+  const editFormDefault = {
+    username: user?.username,
+    email: user?.email,
+    image: user?.image,
+  };
+
+  const [editFrom, setFormInfo] = useState(editFormDefault);
+
+  function formSubmitHandler(evt: FormEvent<HTMLFormElement>) {
     evt.preventDefault();
     const form = evt.target as HTMLFormElement;
     const formData = new FormData(form);
 
-    const repeatedPassInput = form.querySelector(`input[name="${SignUpForm.RepeatedPassword}"]`) as HTMLInputElement;
-    const username = formData.get(SignUpForm.Username) as string;
-    const email = formData.get(SignUpForm.Email) as string;
-    const password = formData.get(SignUpForm.Password) as string;
-    const repeatedPass = formData.get(SignUpForm.RepeatedPassword) as string;
+    const username = formData.get(EditForm.Username) as string;
+    const email = formData.get(EditForm.Email) as string;
+    const newPassword = formData.get(EditForm.Password) as string;
+    const image = (formData.get(EditForm.Image) as string) || null;
 
-    if (password !== repeatedPass) {
-      repeatedPassInput.classList.add(INPUT_INVALID_CLASS);
-      return;
+    const updatedUser: TUserEditRequest = { user: { email, image, username, newPassword } };
+
+    if (!newPassword) delete updatedUser.user.newPassword;
+    if (!image) delete updatedUser.user.image;
+    if (user && user.username === username) delete updatedUser.user.username;
+    if (user && user.email === email) delete updatedUser.user.email;
+    if (user && user.image === image) delete updatedUser.user.image;
+
+    const isUpdateRequired = Boolean(Object.keys(updatedUser.user).length);
+
+    if (isUpdateRequired) {
+      setFormInfo({ username, email, image });
+      updateUser(updatedUser);
+    } else {
+      toast('Successfully saved!', successToastConfig);
     }
-
-    const newUser: TNewUserRequest = { user: { username, email, password } };
-
-    setFormInfo({ username, email, password });
-    postNewUser(newUser);
   }
 
   function inputInvalidHandler(evt: FormEvent<HTMLInputElement>): void {
@@ -75,8 +81,8 @@ function SignUp(props: ISignUpProps): JSX.Element {
 
   useEffect(() => {
     if (isSuccess && data) {
-      toast('Your registration was successful!', successToastConfig);
       dispatch(addUserAction(data.user));
+      toast('Successfully updated!', successToastConfig);
     }
   }, [isSuccess]);
 
@@ -97,7 +103,7 @@ function SignUp(props: ISignUpProps): JSX.Element {
   return (
     <section className={`${className} modal`}>
       <Title level={4} className="modal__title">
-        Create new account
+        Edit Profile
       </Title>
       <form className="modal__form" onSubmit={formSubmitHandler}>
         <label className="modal__label">
@@ -105,14 +111,14 @@ function SignUp(props: ISignUpProps): JSX.Element {
           <Input
             className={`modal__input ${serverError.username ? INPUT_INVALID_CLASS : ''}`}
             placeholder="Username"
-            name={SignUpForm.Username}
             type="text"
+            name={EditForm.Username}
             minLength={3}
             maxLength={20}
             required
             onInvalid={inputInvalidHandler}
+            defaultValue={editFrom.username}
             onChange={inputChnageHandler}
-            defaultValue={formInfo.username}
           />
           <span className="modal__invalid-message">
             Username {serverError.username || 'needs to be from 3 to 20 characters.'}
@@ -124,29 +130,27 @@ function SignUp(props: ISignUpProps): JSX.Element {
           <Input
             className={`modal__input ${serverError.email ? INPUT_INVALID_CLASS : ''}`}
             placeholder="Email address"
-            name={SignUpForm.Email}
             type="email"
+            name={EditForm.Email}
             required
             onInvalid={inputInvalidHandler}
+            defaultValue={editFrom.email}
             onChange={inputChnageHandler}
-            defaultValue={formInfo.email}
           />
-          <span className="modal__invalid-message">Email {serverError.email || 'needs to be correct.'}</span>
+          <span className="modal__invalid-message">{`Email ${serverError.email || 'needs to be correct.'}`}</span>
         </label>
 
         <label className="modal__label">
-          Password
+          New password
           <Input
             className={`modal__input ${serverError.password ? INPUT_INVALID_CLASS : ''}`}
-            placeholder="Password"
+            placeholder="New password"
             type="password"
-            name={SignUpForm.Password}
+            name={EditForm.Password}
             minLength={6}
             maxLength={40}
-            required
             onInvalid={inputInvalidHandler}
             onChange={inputChnageHandler}
-            defaultValue={formInfo.password}
           />
           <span className="modal__invalid-message">{`Password ${
             serverError.password || 'needs to be from 6 to 40 characters.'
@@ -154,47 +158,25 @@ function SignUp(props: ISignUpProps): JSX.Element {
         </label>
 
         <label className="modal__label">
-          Repeat Password
+          Avatar image (url)
           <Input
             className="modal__input"
-            placeholder="Password"
-            type="password"
-            name={SignUpForm.RepeatedPassword}
-            minLength={6}
-            maxLength={40}
-            required
+            placeholder="Avatar image"
+            type="url"
+            name={EditForm.Image}
             onInvalid={inputInvalidHandler}
+            defaultValue={editFrom.image || ''}
             onChange={inputChnageHandler}
-            defaultValue={formInfo.password}
           />
-          <span className="modal__invalid-message">Passwords must match.</span>
+          <span className="modal__invalid-message">Image needs to be correct url.</span>
         </label>
-        <label className="modal__checkbox-label">
-          <Input
-            className="modal__checkbox"
-            type="checkbox"
-            name={SignUpForm.Agreement}
-            value="yes"
-            defaultChecked
-            required
-          />
-          <span>I agree to the processing of my personal information</span>
-        </label>
+
         <Button className="modal__submit" type="primary" htmlType="submit">
-          Create
+          Save
         </Button>
       </form>
-      <div className="modal__message">
-        <span className="modal__message-text">
-          Already have an account?
-          <Link to={AppRoute.Login} className="modal__message-link">
-            Sign In
-          </Link>
-          .
-        </span>
-      </div>
     </section>
   );
 }
 
-export default SignUp;
+export default EditProfile;

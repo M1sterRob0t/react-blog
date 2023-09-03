@@ -4,7 +4,7 @@ import { Button } from 'antd';
 
 import { AppRoute } from '../../constants';
 import { useAppDispatch, useAppSelector } from '../../hooks/hooks';
-import { logoutAction } from '../../state/userReducer';
+import { removeUserAction } from '../../state/userReducer';
 
 import defaultAvatar from './images/default-avatar.png';
 
@@ -41,7 +41,7 @@ export default function Header(props: IHeaderProps): JSX.Element {
                 <img src={user.image || defaultAvatar} width="46" height="46" alt="user avatar " />
               </Link>
             </div>
-            <Button className="header__logout" onClick={() => dispatch(logoutAction())}>
+            <Button className="header__logout" onClick={() => dispatch(removeUserAction())}>
               Log Out
             </Button>
           </div>

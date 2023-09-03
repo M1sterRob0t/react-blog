@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 import type { TArticleResponse, TArticlesSuccessResponse } from '../types/articles';
 import { POSTS_PER_PAGE } from '../constants';
-import { TNewUserRequest, TNewUserResponse, TUserLoginRequest } from '../types/users';
+import { TNewUserRequest, TUserResponse, TUserLoginRequest, TUserEditRequest, TUserInfo } from '../types/users';
 
 enum Endpoint {
   Articles = 'articles',
@@ -11,10 +11,27 @@ enum Endpoint {
   User = 'user',
 }
 
-// Define a service using a base URL and expected endpoints
+type TState = {
+  userInfo: {
+    user: TUserInfo;
+  };
+};
+
 export const api = createApi({
   reducerPath: 'api',
-  baseQuery: fetchBaseQuery({ baseUrl: 'https://blog.kata.academy/api' }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: 'https://blog.kata.academy/api',
+    prepareHeaders: (headers, { getState }) => {
+      const token = (getState() as TState).userInfo.user.token;
+
+      // If we have a token set in state, let's assume that we should be passing it.
+      if (token) {
+        headers.set('authorization', `Bearer ${token}`);
+      }
+
+      return headers;
+    },
+  }),
   endpoints: (builder) => ({
     getArticles: builder.query<TArticlesSuccessResponse, number>({
       query: (page) => {
@@ -25,23 +42,34 @@ export const api = createApi({
     getArticle: builder.query<TArticleResponse, string>({
       query: (slug) => `${Endpoint.Articles}/${slug}`,
     }),
-    postNewUser: builder.mutation<TNewUserResponse, TNewUserRequest>({
+    postNewUser: builder.mutation<TUserResponse, TNewUserRequest>({
       query: (newUser) => ({
         url: Endpoint.Users,
         method: 'POST',
         body: newUser,
       }),
     }),
-    postExistingUser: builder.mutation<TNewUserResponse, TUserLoginRequest>({
+    postExistingUser: builder.mutation<TUserResponse, TUserLoginRequest>({
       query: (user) => ({
         url: Endpoint.Login,
         method: 'POST',
         body: user,
       }),
     }),
+    putUpdatedUser: builder.mutation<TUserResponse, TUserEditRequest>({
+      query: (user) => ({
+        url: Endpoint.User,
+        method: 'PUT',
+        body: user,
+      }),
+    }),
   }),
 });
 
-// Export hooks for usage in functional components, which are
-// auto-generated based on the defined endpoints
-export const { useGetArticlesQuery, useGetArticleQuery, usePostNewUserMutation, usePostExistingUserMutation } = api;
+export const {
+  useGetArticlesQuery,
+  useGetArticleQuery,
+  usePostNewUserMutation,
+  usePostExistingUserMutation,
+  usePutUpdatedUserMutation,
+} = api;

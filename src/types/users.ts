@@ -16,7 +16,7 @@ export type TUserInfo = {
   image: null | string;
 };
 
-export type TNewUserResponse = {
+export type TUserResponse = {
   user: TUserInfo;
 };
 
