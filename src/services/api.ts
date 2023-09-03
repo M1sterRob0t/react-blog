@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 import type { TArticleResponse, TArticlesSuccessResponse } from '../types/articles';
 import { POSTS_PER_PAGE } from '../constants';
-import { TNewUserRequest, TNewUserResponse } from '../types/users';
+import { TNewUserRequest, TNewUserResponse, TUserLoginRequest } from '../types/users';
 
 enum Endpoint {
   Articles = 'articles',
@@ -12,7 +12,7 @@ enum Endpoint {
 }
 
 // Define a service using a base URL and expected endpoints
-export const blogApi = createApi({
+export const api = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({ baseUrl: 'https://blog.kata.academy/api' }),
   endpoints: (builder) => ({
@@ -27,9 +27,16 @@ export const blogApi = createApi({
     }),
     postNewUser: builder.mutation<TNewUserResponse, TNewUserRequest>({
       query: (newUser) => ({
-        url: `${Endpoint.Users}`,
+        url: Endpoint.Users,
         method: 'POST',
         body: newUser,
+      }),
+    }),
+    postExistingUser: builder.mutation<TNewUserResponse, TUserLoginRequest>({
+      query: (user) => ({
+        url: Endpoint.Login,
+        method: 'POST',
+        body: user,
       }),
     }),
   }),
@@ -37,4 +44,4 @@ export const blogApi = createApi({
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { useGetArticlesQuery, useGetArticleQuery, usePostNewUserMutation } = blogApi;
+export const { useGetArticlesQuery, useGetArticleQuery, usePostNewUserMutation, usePostExistingUserMutation } = api;

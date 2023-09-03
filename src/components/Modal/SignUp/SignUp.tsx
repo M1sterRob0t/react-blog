@@ -1,17 +1,21 @@
+import { FormEvent, useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { FormEvent, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { Input, Typography, Button } from 'antd';
 import type { FetchBaseQueryError } from '@reduxjs/toolkit/dist/query';
 import type { SerializedError } from '@reduxjs/toolkit';
 
-import { usePostNewUserMutation } from '../../../services/blog';
+import { usePostNewUserMutation } from '../../../services/api';
 import type { TNewUser, TNewUserRequest } from '../../../types/users';
 import type { TInvalidFieldServerErrorResponse, TServerErrorResponse } from '../../../types/registration';
 import { AppRoute, INPUT_INVALID_CLASS, errorToastConfig, successToastConfig } from '../../../constants';
-import { saveUserInfo } from '../../../services/userInfo';
 import Spinner from '../../Spinner';
+import { isFetchBaseQueryError, isErrorWithMessage } from '../../../utils';
 import '../style.css';
+import { useAppDispatch } from '../../../hooks/hooks';
+import { loginAction } from '../../../state/userReducer';
+
+const { Title } = Typography;
 
 const SignUpForm = {
   Username: 'username',
@@ -26,19 +30,6 @@ const formInfoDefault: TNewUser = {
   email: '',
   password: '',
 };
-
-interface ISignUpProps {
-  className: string;
-}
-const { Title } = Typography;
-
-function isFetchBaseQueryError(error: unknown): error is FetchBaseQueryError {
-  return typeof error === 'object' && error != null && 'status' in error;
-}
-
-function isErrorWithMessage(error: unknown): error is { message: string } {
-  return typeof error === 'object' && error != null && 'message' in error && typeof error.message === 'string';
-}
 
 function processServerError(error: FetchBaseQueryError | SerializedError | undefined) {
   const result = {
@@ -58,11 +49,16 @@ function processServerError(error: FetchBaseQueryError | SerializedError | undef
   return result;
 }
 
+interface ISignUpProps {
+  className: string;
+}
+
 function SignUp(props: ISignUpProps): JSX.Element {
   const { className } = props;
   const [formInfo, setFormInfo] = useState(formInfoDefault);
   const [postNewUser, { error, isError, isSuccess, isLoading, data }] = usePostNewUserMutation();
   const serverError = processServerError(error);
+  const dispatch = useAppDispatch();
 
   function formSubmitHandler(evt: FormEvent<HTMLFormElement>): void {
     evt.preventDefault();
@@ -97,12 +93,16 @@ function SignUp(props: ISignUpProps): JSX.Element {
     if (input.validity.valid) input.classList.remove(INPUT_INVALID_CLASS);
   }
 
-  if (isLoading) <Spinner />;
+  useEffect(() => {
+    if (isSuccess && data) {
+      toast('Your registration was successful!', successToastConfig);
+      dispatch(loginAction(data.user));
+    }
+  }, [isSuccess]);
 
-  if (isSuccess && data) {
-    saveUserInfo(data.user);
-    toast('Your registration was successful!', successToastConfig);
-  }
+  if (isLoading) return <Spinner />;
+
+  if (isSuccess) return <Navigate to={AppRoute.Articles} />;
 
   if (isError) {
     if (isFetchBaseQueryError(error) && error.status !== 422) {

@@ -3,7 +3,8 @@ import './style.css';
 import { Button } from 'antd';
 
 import { AppRoute } from '../../constants';
-import { TUserInfo } from '../../types/users';
+import { useAppDispatch, useAppSelector } from '../../hooks/hooks';
+import { logoutAction } from '../../state/userReducer';
 
 import defaultAvatar from './images/default-avatar.png';
 
@@ -13,8 +14,8 @@ interface IHeaderProps {
 
 export default function Header(props: IHeaderProps): JSX.Element {
   const { className } = props;
-  const isUser = false;
-  const user = {} as TUserInfo;
+  const user = useAppSelector((state) => state.userInfo.user);
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   return (
@@ -25,7 +26,7 @@ export default function Header(props: IHeaderProps): JSX.Element {
         </Link>
       </div>
       <div className="header__controls">
-        {isUser ? (
+        {user ? (
           <div className="header__auth-user">
             <Link to={AppRoute.NewArticle}>
               <Button className="header__create-article" onClick={() => console.log('create')}>
@@ -40,7 +41,7 @@ export default function Header(props: IHeaderProps): JSX.Element {
                 <img src={user.image || defaultAvatar} width="46" height="46" alt="user avatar " />
               </Link>
             </div>
-            <Button className="header__logout" onClick={() => console.log('logout')}>
+            <Button className="header__logout" onClick={() => dispatch(logoutAction())}>
               Log Out
             </Button>
           </div>

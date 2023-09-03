@@ -1,3 +1,5 @@
+import type { FetchBaseQueryError } from '@reduxjs/toolkit/dist/query';
+
 import type { TArticle } from './types/articles';
 
 export function formatArticles(articles: TArticle[]): TArticle[] {
@@ -8,4 +10,12 @@ export function formatArticles(articles: TArticle[]): TArticle[] {
   });
 
   return articlesWithFilteredTags;
+}
+
+export function isFetchBaseQueryError(error: unknown): error is FetchBaseQueryError {
+  return typeof error === 'object' && error != null && 'status' in error;
+}
+
+export function isErrorWithMessage(error: unknown): error is { message: string } {
+  return typeof error === 'object' && error != null && 'message' in error && typeof error.message === 'string';
 }

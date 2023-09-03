@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import Post from '../Post';
 import Spinner from '../Spinner';
 import Error from '../Error';
-import { useGetArticleQuery } from '../../services/blog';
+import { useGetArticleQuery } from '../../services/api';
 import { formatArticles } from '../../utils';
 
 function PostFull(): JSX.Element {

@@ -4,7 +4,7 @@ import { Pagination } from 'antd';
 import { POSTS_PER_PAGE, MAX_POSTS } from '../../constants';
 import Spinner from '../Spinner';
 import Error from '../Error';
-import { useGetArticlesQuery } from '../../services/blog';
+import { useGetArticlesQuery } from '../../services/api';
 import { formatArticles } from '../../utils';
 
 import PostsList from './PostsList';

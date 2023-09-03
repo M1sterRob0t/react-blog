@@ -9,6 +9,7 @@ import { AppRoute } from '../../constants';
 import NotFound from '../NotFound';
 import PostFull from '../PostFull';
 import SignUp from '../Modal/SignUp';
+import SignIn from '../Modal/SignIn';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path={AppRoute.NotFound} element={<NotFound />} />
         <Route path={AppRoute.Article} element={<PostFull />} />
         <Route path={AppRoute.Registration} element={<SignUp className="app__modal" />} />
+        <Route path={AppRoute.Login} element={<SignIn className="app__modal" />} />
       </Routes>
       <ToastContainer />
     </div>

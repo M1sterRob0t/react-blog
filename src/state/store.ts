@@ -1,10 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit';
 
-import { blogApi } from '../services/blog';
+import { api } from '../services/api';
+
+import userInfo from './userReducer';
 
 export const store = configureStore({
   reducer: {
-    [blogApi.reducerPath]: blogApi.reducer,
+    userInfo,
+    [api.reducerPath]: api.reducer,
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(blogApi.middleware),
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(api.middleware),
 });
