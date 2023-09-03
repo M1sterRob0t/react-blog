@@ -2,7 +2,8 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 import type { TArticleResponse, TArticlesSuccessResponse } from '../types/articles';
 import { POSTS_PER_PAGE } from '../constants';
-import { TNewUserRequest, TUserResponse, TUserLoginRequest, TUserEditRequest, TUserInfo } from '../types/users';
+import { TNewUserRequest, TUserResponse, TUserLoginRequest, TUserEditRequest } from '../types/users';
+import type { TRootState } from '../state/store';
 
 enum Endpoint {
   Articles = 'articles',
@@ -11,20 +12,14 @@ enum Endpoint {
   User = 'user',
 }
 
-type TState = {
-  userInfo: {
-    user: TUserInfo;
-  };
-};
-
 export const api = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({
     baseUrl: 'https://blog.kata.academy/api',
     prepareHeaders: (headers, { getState }) => {
-      const token = (getState() as TState).userInfo.user.token;
+      const user = (getState() as TRootState).userInfo.user;
+      const token = user ? user.token : '';
 
-      // If we have a token set in state, let's assume that we should be passing it.
       if (token) {
         headers.set('authorization', `Bearer ${token}`);
       }
