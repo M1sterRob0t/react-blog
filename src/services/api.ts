@@ -72,6 +72,13 @@ export const api = createApi({
         body: article,
       }),
     }),
+    deleteArticle: builder.mutation<void, string>({
+      query: (slug) => ({
+        url: `${Endpoint.Articles}/${slug}`,
+        method: 'DELETE',
+        body: slug,
+      }),
+    }),
   }),
 });
 
@@ -83,4 +90,5 @@ export const {
   usePutUpdatedUserMutation,
   usePostNewArticleMutation,
   usePutUpdatedArticleMutation,
+  useDeleteArticleMutation,
 } = api;

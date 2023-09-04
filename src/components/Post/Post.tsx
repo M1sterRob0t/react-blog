@@ -1,12 +1,17 @@
-import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { Link, Navigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import { HeartOutlined, HeartFilled } from '@ant-design/icons';
 import { Tag, Button, Popconfirm } from 'antd';
 import { format } from 'date-fns';
 
-import { AppRoute } from '../../constants';
-import type { TArticle } from '../../types/articles';
+import { AppRoute, successToastConfig, errorToastConfig } from '../../constants';
 import './style.css';
+import { useDeleteArticleMutation } from '../../services/api';
+import Spinner from '../Spinner';
+import { isFetchBaseQueryError, isErrorWithMessage } from '../../utils';
+import type { TArticle } from '../../types/articles';
+import type { TServerErrorResponse } from '../../types/registration';
 
 const DATE_FROMAT = 'MMMM 	d, yyy';
 
@@ -19,6 +24,24 @@ interface IPostProps {
 export default function Post(props: IPostProps) {
   const { full, fromUser, article } = props;
   const date = format(new Date(article.createdAt), DATE_FROMAT);
+  const [deleteArticle, { isLoading, isSuccess, error }] = useDeleteArticleMutation();
+
+  if (isLoading) return <Spinner />;
+
+  if (isSuccess) {
+    toast('The article has been successfully removed!', successToastConfig);
+    return <Navigate to={AppRoute.Articles} />;
+  }
+
+  if (error) {
+    if (isFetchBaseQueryError(error)) {
+      const serverErrorObj = error.data as TServerErrorResponse;
+      const errorMessage = `Status: ${error.status}. ${serverErrorObj.errors.message}.`;
+      toast(errorMessage, errorToastConfig);
+    } else if (isErrorWithMessage(error)) {
+      toast(error.message, errorToastConfig);
+    }
+  }
 
   return (
     <article className={`post ${full && 'post--full'}`}>
@@ -52,7 +75,7 @@ export default function Post(props: IPostProps) {
             <Popconfirm
               className="post__popconfirm"
               title="Are you sure to delete this article?"
-              onConfirm={() => console.log('confirm deleting')}
+              onConfirm={() => deleteArticle(article.slug)}
               okText="Yes"
               cancelText="No"
               placement="rightTop"
