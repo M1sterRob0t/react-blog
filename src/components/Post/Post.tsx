@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { Link, Navigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
@@ -7,11 +8,16 @@ import { format } from 'date-fns';
 
 import { AppRoute, successToastConfig, errorToastConfig } from '../../constants';
 import './style.css';
-import { useDeleteArticleMutation } from '../../services/api';
+import {
+  useDeleteArticleMutation,
+  useDeleteLikeFromArticleMutation,
+  usePostLikeToArticleMutation,
+} from '../../services/api';
 import Spinner from '../Spinner';
 import { isFetchBaseQueryError, isErrorWithMessage } from '../../utils';
 import type { TArticle } from '../../types/articles';
 import type { TServerErrorResponse } from '../../types/registration';
+import { useAppSelector } from '../../hooks/hooks';
 
 const DATE_FROMAT = 'MMMM 	d, yyy';
 
@@ -24,7 +30,28 @@ interface IPostProps {
 export default function Post(props: IPostProps) {
   const { full, fromUser, article } = props;
   const date = format(new Date(article.createdAt), DATE_FROMAT);
+  const user = useAppSelector((state) => state.userInfo.user);
+
+  const [isFavorite, setFavorite] = useState(article.favorited);
+  const [likesCount, setLikesCount] = useState(article.favoritesCount);
+
   const [deleteArticle, { isLoading, isSuccess, error }] = useDeleteArticleMutation();
+  const [postLikeToArticle] = usePostLikeToArticleMutation();
+  const [deleteLikeFromArticle] = useDeleteLikeFromArticleMutation();
+
+  function likeButtonClickHandler(): void {
+    if (!user) return;
+
+    if (isFavorite) {
+      deleteLikeFromArticle(article.slug);
+      setFavorite(false);
+      setLikesCount((prev) => --prev);
+    } else {
+      postLikeToArticle(article.slug);
+      setFavorite(true);
+      setLikesCount((prev) => ++prev);
+    }
+  }
 
   if (isLoading) return <Spinner />;
 
@@ -50,14 +77,14 @@ export default function Post(props: IPostProps) {
           {article.title}
         </Link>
         <span className="post__likes">
-          <span className="post__likes-icon-wrapper" onClick={() => console.log('like')}>
-            {article.favorited ? (
+          <span className="post__likes-icon-wrapper" onClick={likeButtonClickHandler}>
+            {isFavorite ? (
               <HeartFilled className="post__likes-icon post__likes-icon--clicked" />
             ) : (
               <HeartOutlined className="post__likes-icon" />
             )}
           </span>
-          <span className="post__likes-count">{article.favoritesCount}</span>
+          <span className="post__likes-count">{likesCount}</span>
         </span>
       </div>
       <div className="post__info">

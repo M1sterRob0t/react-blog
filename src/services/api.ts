@@ -79,6 +79,20 @@ export const api = createApi({
         body: slug,
       }),
     }),
+    postLikeToArticle: builder.mutation<TArticleResponse, string>({
+      query: (slug) => ({
+        url: `${Endpoint.Articles}/${slug}/favorite`,
+        method: 'POST',
+        body: slug,
+      }),
+    }),
+    deleteLikeFromArticle: builder.mutation<TArticleResponse, string>({
+      query: (slug) => ({
+        url: `${Endpoint.Articles}/${slug}/favorite`,
+        method: 'DELETE',
+        body: slug,
+      }),
+    }),
   }),
 });
 
@@ -91,4 +105,6 @@ export const {
   usePostNewArticleMutation,
   usePutUpdatedArticleMutation,
   useDeleteArticleMutation,
+  usePostLikeToArticleMutation,
+  useDeleteLikeFromArticleMutation,
 } = api;
