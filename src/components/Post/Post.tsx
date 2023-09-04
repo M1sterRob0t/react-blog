@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { Link, Navigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
@@ -32,9 +31,6 @@ export default function Post(props: IPostProps) {
   const date = format(new Date(article.createdAt), DATE_FROMAT);
   const user = useAppSelector((state) => state.userInfo.user);
 
-  const [isFavorite, setFavorite] = useState(article.favorited);
-  const [likesCount, setLikesCount] = useState(article.favoritesCount);
-
   const [deleteArticle, { isLoading, isSuccess, error }] = useDeleteArticleMutation();
   const [postLikeToArticle] = usePostLikeToArticleMutation();
   const [deleteLikeFromArticle] = useDeleteLikeFromArticleMutation();
@@ -42,14 +38,10 @@ export default function Post(props: IPostProps) {
   function likeButtonClickHandler(): void {
     if (!user) return;
 
-    if (isFavorite) {
+    if (article.favorited) {
       deleteLikeFromArticle(article.slug);
-      setFavorite(false);
-      setLikesCount((prev) => --prev);
     } else {
       postLikeToArticle(article.slug);
-      setFavorite(true);
-      setLikesCount((prev) => ++prev);
     }
   }
 
@@ -78,13 +70,13 @@ export default function Post(props: IPostProps) {
         </Link>
         <span className="post__likes">
           <span className="post__likes-icon-wrapper" onClick={likeButtonClickHandler}>
-            {isFavorite ? (
+            {article.favorited ? (
               <HeartFilled className="post__likes-icon post__likes-icon--clicked" />
             ) : (
               <HeartOutlined className="post__likes-icon" />
             )}
           </span>
-          <span className="post__likes-count">{likesCount}</span>
+          <span className="post__likes-count">{article.favoritesCount}</span>
         </span>
       </div>
       <div className="post__info">
@@ -120,7 +112,7 @@ export default function Post(props: IPostProps) {
       <div className="post__desc">
         <div className="post__tegs-list">
           {article.tagList.map((tag) => (
-            <Tag className="post__tegs-item" key={tag.toLowerCase()}>
+            <Tag className="post__tegs-item" key={tag.toLowerCase()} style={{ userSelect: 'none' }}>
               {tag}
             </Tag>
           ))}

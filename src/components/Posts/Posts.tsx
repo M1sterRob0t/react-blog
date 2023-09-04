@@ -12,7 +12,7 @@ import './style.css';
 
 function Posts(): JSX.Element {
   const [currentPage, setCurrentPage] = useState(1);
-  const { data, isError, isFetching, refetch } = useGetArticlesQuery(currentPage);
+  const { data, isError, isFetching } = useGetArticlesQuery(currentPage);
   const articles = data ? formatArticles(data.articles) : [];
 
   if (isError) return <Error />;
@@ -25,7 +25,6 @@ function Posts(): JSX.Element {
         total={MAX_POSTS}
         onChange={(page) => {
           setCurrentPage(page);
-          refetch();
         }}
         showSizeChanger={false}
       />
