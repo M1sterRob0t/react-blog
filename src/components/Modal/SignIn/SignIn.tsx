@@ -4,13 +4,14 @@ import '../style.css';
 import { Input, Typography, Button } from 'antd';
 import { toast } from 'react-toastify';
 
-import { TUserLoginRequest, TUserLogin } from '../../../types/users';
 import { usePostExistingUserMutation } from '../../../services/api';
 import Spinner from '../../Spinner';
 import { addUserAction } from '../../../state/userReducer';
 import { isFetchBaseQueryError, isErrorWithMessage } from '../../../utils';
 import { AppRoute, errorToastConfig, successToastConfig } from '../../../constants';
 import { useAppDispatch } from '../../../hooks/hooks';
+import type { TUserLoginRequest, TUserLogin } from '../../../types/users';
+import type { TServerErrorResponse } from '../../../types/registration';
 
 const { Title } = Typography;
 
@@ -64,8 +65,9 @@ function SignIn(props: ISignInProps): JSX.Element {
       const message = 'Email or password is incorrect.';
       toast(message, errorToastConfig);
     } else if (isFetchBaseQueryError(error)) {
-      const message = 'error' in error ? error.error : JSON.stringify(error.data);
-      toast(message, errorToastConfig);
+      const serverErrorObj = error.data as TServerErrorResponse;
+      const errorMessage = `Status: ${error.status}. ${serverErrorObj.errors.message}.`;
+      toast(errorMessage, errorToastConfig);
     } else if (isErrorWithMessage(error)) {
       toast(error.message, errorToastConfig);
     }

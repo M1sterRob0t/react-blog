@@ -26,6 +26,7 @@ function App() {
         <Route path={AppRoute.Login} element={<SignIn className="app__modal" />} />
         <Route path={AppRoute.Profile} element={<EditProfile className="app__modal" />} />
         <Route path={AppRoute.NewArticle} element={<CreateNewPost className="app__create-new-post" />} />
+        <Route path={AppRoute.EditArticle} element={<CreateNewPost className="app__create-new-post" edit />} />
       </Routes>
       <ToastContainer />
     </div>

@@ -65,6 +65,13 @@ export const api = createApi({
         body: article,
       }),
     }),
+    putUpdatedArticle: builder.mutation<TArticleResponse, { slug: string; article: TNewArticleRequest }>({
+      query: ({ slug, article }) => ({
+        url: `${Endpoint.Articles}/${slug}`,
+        method: 'PUT',
+        body: article,
+      }),
+    }),
   }),
 });
 
@@ -75,4 +82,5 @@ export const {
   usePostExistingUserMutation,
   usePutUpdatedUserMutation,
   usePostNewArticleMutation,
+  usePutUpdatedArticleMutation,
 } = api;

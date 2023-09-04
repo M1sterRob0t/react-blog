@@ -5,10 +5,11 @@ import { toast } from 'react-toastify';
 
 import { AppRoute, errorToastConfig, successToastConfig } from '../../constants';
 import { isFetchBaseQueryError, isErrorWithMessage } from '../../utils';
-import { TNewArticleRequest } from '../../types/articles';
-import { useGetArticleQuery, usePostNewArticleMutation } from '../../services/api';
+import { useGetArticleQuery, usePostNewArticleMutation, usePutUpdatedArticleMutation } from '../../services/api';
 import Spinner from '../Spinner';
 import Error from '../Error';
+import type { TNewArticleRequest } from '../../types/articles';
+import type { TServerErrorResponse } from '../../types/registration';
 import './style.css';
 
 const { Title } = Typography;
@@ -21,9 +22,14 @@ interface ICreateNewPostProps {
 function CreateNewPost(props: ICreateNewPostProps): JSX.Element {
   const { className, edit: isEdit } = props;
   const { slug = '' } = useParams();
-  const { data, isError: isErrorGet, isLoading: isLoadingGet } = useGetArticleQuery(slug, { skip: Boolean(slug) });
+  console.log(slug);
+  const { data, isError: isErrorGet, isLoading: isLoadingGet } = useGetArticleQuery(slug, { skip: !isEdit });
   const article = data ? data.article : null;
-  const [postNewArticle, { error, isLoading: isLoadingPost, isSuccess }] = usePostNewArticleMutation();
+  const [postNewArticle, { error: errorPost, isLoading: isLoadingPost, isSuccess: isSuccessPost }] =
+    usePostNewArticleMutation();
+  const [updateUserArticle, { error: errorPut, isLoading: isLoadingPut, isSuccess: isSuccessPut }] =
+    usePutUpdatedArticleMutation();
+  const error = errorPost || errorPut || null;
 
   const [title, setTitle] = useState(isEdit && article ? article.title : '');
   const [description, setDescription] = useState(isEdit && article ? article.description : '');
@@ -50,9 +56,8 @@ function CreateNewPost(props: ICreateNewPostProps): JSX.Element {
       },
     };
 
-    //if (isEdit && article) dispatch(updateUserArticle({ newArticle, slug: article.slug }));
-    //else postNewArticle(newArticle);
-    postNewArticle(newArticle);
+    if (isEdit && article) updateUserArticle({ article: newArticle, slug: article.slug });
+    else postNewArticle(newArticle);
   }
 
   function addNewTagButtonClickHandler() {
@@ -79,16 +84,25 @@ function CreateNewPost(props: ICreateNewPostProps): JSX.Element {
     setTags(article?.tagList || []);
   }, [article]);
 
-  if (isSuccess) {
-    toast('The article has been successfully created!', successToastConfig);
+  if (isSuccessPost || isSuccessPut) {
+    const successMessage = isSuccessPost
+      ? 'The article has been successfully created!'
+      : 'The article has been successfully updated!';
+    toast(successMessage, successToastConfig);
     return <Navigate to={AppRoute.Articles} />;
   }
-  if (isLoadingGet || isLoadingPost) return <Spinner />;
+
+  if (isLoadingGet || isLoadingPost || isLoadingPut || (isEdit && !article)) {
+    return <Spinner />;
+  }
+
   if (isErrorGet) return <Error />;
+
   if (error) {
     if (isFetchBaseQueryError(error)) {
-      const message = 'error' in error ? error.error : JSON.stringify(error.data);
-      toast(message, errorToastConfig);
+      const serverErrorObj = error.data as TServerErrorResponse;
+      const errorMessage = `Status: ${error.status}. ${serverErrorObj.errors.message}.`;
+      toast(errorMessage, errorToastConfig);
     } else if (isErrorWithMessage(error)) {
       toast(error.message, errorToastConfig);
     }
