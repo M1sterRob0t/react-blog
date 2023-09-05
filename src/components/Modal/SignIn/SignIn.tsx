@@ -1,28 +1,30 @@
-import { FormEvent, useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import '../style.css';
 import { Input, Typography, Button } from 'antd';
 import { toast } from 'react-toastify';
+import { useForm, Controller } from 'react-hook-form';
+import type { SubmitHandler } from 'react-hook-form';
 
 import { usePostExistingUserMutation } from '../../../services/api';
 import Spinner from '../../Spinner';
 import { addUserAction } from '../../../state/userReducer';
 import { isFetchBaseQueryError, isErrorWithMessage } from '../../../utils';
-import { AppRoute, errorToastConfig, successToastConfig } from '../../../constants';
+import { AppRoute, errorToastConfig, successToastConfig, INPUT_INVALID_CLASS } from '../../../constants';
 import { useAppDispatch } from '../../../hooks/hooks';
-import type { TUserLoginRequest, TUserLogin } from '../../../types/users';
+import type { TUserLoginRequest } from '../../../types/users';
 import type { TServerErrorResponse } from '../../../types/registration';
 
 const { Title } = Typography;
 
 const SignInForm = {
-  Email: 'email',
-  Password: 'password',
+  Email: 'email' as const,
+  Password: 'password' as const,
 };
 
-const formInfoDefault: TUserLogin = {
-  email: '',
-  password: '',
+type TSignInFormData = {
+  email: string;
+  password: string;
 };
 
 interface ISignInProps {
@@ -31,23 +33,13 @@ interface ISignInProps {
 
 function SignIn(props: ISignInProps): JSX.Element {
   const { className } = props;
-  const [formInfo, setFormInfo] = useState(formInfoDefault);
   const [requireLogin, { isLoading, isSuccess, isError, error, data }] = usePostExistingUserMutation();
   const dispatch = useAppDispatch();
-
-  function formSubmitHandler(evt: FormEvent<HTMLFormElement>) {
-    evt.preventDefault();
-    const form = evt.target as HTMLFormElement;
-    const formData = new FormData(form);
-
-    const email = formData.get(SignInForm.Email) as string;
-    const password = formData.get(SignInForm.Password) as string;
-
-    const user: TUserLoginRequest = { user: { email, password } };
-
-    setFormInfo({ email, password });
-    requireLogin(user);
-  }
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm<TSignInFormData>();
 
   useEffect(() => {
     if (isSuccess && data) {
@@ -72,35 +64,51 @@ function SignIn(props: ISignInProps): JSX.Element {
       toast(error.message, errorToastConfig);
     }
   }
+  const formSubmitHandler: SubmitHandler<TSignInFormData> = (data) => {
+    const user: TUserLoginRequest = { user: { email: data.email, password: data.password } };
+    requireLogin(user);
+  };
 
   return (
     <section className={`${className} modal`}>
       <Title level={4} className="modal__title">
         Sign In
       </Title>
-      <form className="modal__form" onSubmit={formSubmitHandler}>
+      <form className="modal__form" onSubmit={handleSubmit(formSubmitHandler)}>
         <label className="modal__label">
           Email address
-          <Input
-            className="modal__input"
-            placeholder="Email address"
-            type="email"
+          <Controller
             name={SignInForm.Email}
-            defaultValue={formInfo.email}
-            required
+            control={control}
+            rules={{ required: 'Please, write your password.' }}
+            render={({ field }) => (
+              <Input
+                className={`modal__input ${errors.email ? INPUT_INVALID_CLASS : ''}`}
+                placeholder="Email address"
+                type="email"
+                {...field}
+              />
+            )}
           />
+          <span className="modal__invalid-message">{errors.email && errors.email.message}</span>
         </label>
 
         <label className="modal__label">
           Password
-          <Input
-            className="modal__input"
-            placeholder="Password"
-            type="password"
+          <Controller
             name={SignInForm.Password}
-            defaultValue={formInfo.password}
-            required
+            control={control}
+            rules={{ required: 'Please, write your password.' }}
+            render={({ field }) => (
+              <Input
+                className={`modal__input ${errors.email ? INPUT_INVALID_CLASS : ''}`}
+                placeholder="Password"
+                type="password"
+                {...field}
+              />
+            )}
           />
+          <span className="modal__invalid-message">{errors.password && errors.password.message}</span>
         </label>
 
         <Button className="modal__submit" type="primary" htmlType="submit">

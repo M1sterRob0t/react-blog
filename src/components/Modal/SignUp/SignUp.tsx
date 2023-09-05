@@ -92,7 +92,7 @@ function SignUp(props: ISignUpProps): JSX.Element {
 
     postNewUser(newUser);
   };
-  console.log(errors);
+
   return (
     <section className={`${className} modal`}>
       <Title level={4} className="modal__title">
