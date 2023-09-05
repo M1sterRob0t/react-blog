@@ -1,7 +1,9 @@
-import { Navigate } from 'react-router-dom';
-import { FormEvent, useEffect, useState } from 'react';
+import { Navigate, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import { Input, Typography, Button } from 'antd';
 import { toast } from 'react-toastify';
+import { useForm, Controller } from 'react-hook-form';
+import type { SubmitHandler } from 'react-hook-form';
 
 import { AppRoute, successToastConfig, errorToastConfig, INPUT_INVALID_CLASS } from '../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks/hooks';
@@ -13,17 +15,24 @@ import { addUserAction } from '../../../state/userReducer';
 import type { TUserEditRequest } from '../../../types/users';
 import type { TServerErrorResponse } from '../../../types/registration';
 
+const { Title } = Typography;
 const EditForm = {
-  Username: 'username',
-  Email: 'email',
-  Password: 'password',
-  Image: 'image',
+  Username: 'username' as const,
+  Email: 'email' as const,
+  Password: 'password' as const,
+  Image: 'image' as const,
+};
+
+type TEditFormData = {
+  password?: string;
+  email?: string;
+  username?: string;
+  image?: string;
 };
 
 interface IEditProfileProps {
   className: string;
 }
-const { Title } = Typography;
 
 function EditProfile(props: IEditProfileProps): JSX.Element {
   const { className } = props;
@@ -31,58 +40,24 @@ function EditProfile(props: IEditProfileProps): JSX.Element {
   const dispatch = useAppDispatch();
   const [updateUser, { isLoading, isSuccess, isError, error, data }] = usePutUpdatedUserMutation();
   const serverError = processServerError(error);
-
-  const editFormDefault = {
-    username: user?.username,
-    email: user?.email,
-    image: user?.image,
-  };
-
-  const [editFrom, setFormInfo] = useState(editFormDefault);
-
-  function formSubmitHandler(evt: FormEvent<HTMLFormElement>) {
-    evt.preventDefault();
-    const form = evt.target as HTMLFormElement;
-    const formData = new FormData(form);
-
-    const username = formData.get(EditForm.Username) as string;
-    const email = formData.get(EditForm.Email) as string;
-    const newPassword = formData.get(EditForm.Password) as string;
-    const image = (formData.get(EditForm.Image) as string) || null;
-
-    const updatedUser: TUserEditRequest = { user: { email, image, username, newPassword } };
-
-    if (!newPassword) delete updatedUser.user.newPassword;
-    if (!image) delete updatedUser.user.image;
-    if (user && user.username === username) delete updatedUser.user.username;
-    if (user && user.email === email) delete updatedUser.user.email;
-    if (user && user.image === image) delete updatedUser.user.image;
-
-    const isUpdateRequired = Boolean(Object.keys(updatedUser.user).length);
-
-    if (isUpdateRequired) {
-      setFormInfo({ username, email, image });
-      updateUser(updatedUser);
-    } else {
-      toast('Successfully saved!', successToastConfig);
-    }
-  }
-
-  function inputInvalidHandler(evt: FormEvent<HTMLInputElement>): void {
-    const input = evt.target as HTMLInputElement;
-    if (input.validity.valid) input.classList.remove(INPUT_INVALID_CLASS);
-    else input.classList.add(INPUT_INVALID_CLASS);
-  }
-
-  function inputChnageHandler(evt: FormEvent<HTMLInputElement>): void {
-    const input = evt.target as HTMLInputElement;
-    if (input.validity.valid) input.classList.remove(INPUT_INVALID_CLASS);
-  }
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm<TEditFormData>({
+    defaultValues: {
+      username: user ? user.username : '',
+      email: user ? user.email : '',
+      password: '',
+      image: user && user.image ? user.image : '',
+    },
+  });
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (isSuccess && data) {
       dispatch(addUserAction(data.user));
-      toast('Successfully updated!', successToastConfig);
+      toast('Your profile successfully updated!', successToastConfig);
     }
   }, [isSuccess]);
 
@@ -100,75 +75,114 @@ function EditProfile(props: IEditProfileProps): JSX.Element {
     }
   }
 
+  const formSubmitHandler: SubmitHandler<TEditFormData> = (data) => {
+    const { username, email, password, image } = data;
+    const updatedUser: TUserEditRequest = { user: { email, image, username, password } };
+
+    if (!password) delete updatedUser.user.password;
+    if (!image) delete updatedUser.user.image;
+    if (user && user.username === username) delete updatedUser.user.username;
+    if (user && user.email === email) delete updatedUser.user.email;
+    if (user && user.image === image) delete updatedUser.user.image;
+
+    const isUpdateRequired = Boolean(Object.keys(updatedUser.user).length);
+
+    console.log(updatedUser);
+
+    if (isUpdateRequired) {
+      updateUser(updatedUser);
+    } else {
+      navigate(AppRoute.Root);
+    }
+  };
+
   return (
     <section className={`${className} modal`}>
       <Title level={4} className="modal__title">
         Edit Profile
       </Title>
-      <form className="modal__form" onSubmit={formSubmitHandler}>
+      <form className="modal__form" onSubmit={handleSubmit(formSubmitHandler)}>
         <label className="modal__label">
           Username
-          <Input
-            className={`modal__input ${serverError.username ? INPUT_INVALID_CLASS : ''}`}
-            placeholder="Username"
-            type="text"
+          <Controller
             name={EditForm.Username}
-            minLength={3}
-            maxLength={20}
-            required
-            onInvalid={inputInvalidHandler}
-            defaultValue={editFrom.username}
-            onChange={inputChnageHandler}
+            control={control}
+            rules={{
+              required: 'Please, write your name.',
+              minLength: { value: 3, message: 'Minimum length 3 characters.' },
+              maxLength: { value: 20, message: 'Maximum length 20 characters.' },
+            }}
+            render={({ field }) => (
+              <Input
+                className={`modal__input ${errors.username || serverError.username ? INPUT_INVALID_CLASS : ''}`}
+                placeholder="Username"
+                type="text"
+                {...field}
+              />
+            )}
           />
           <span className="modal__invalid-message">
-            Username {serverError.username || 'needs to be from 3 to 20 characters.'}
+            {errors.username && (errors.username.message || 'Username needs to be from 3 to 20 characters. ')}
+            {!errors.username && serverError.username && `Username ${serverError.username}.`}
           </span>
         </label>
 
         <label className="modal__label">
           Email address
-          <Input
-            className={`modal__input ${serverError.email ? INPUT_INVALID_CLASS : ''}`}
-            placeholder="Email address"
-            type="email"
+          <Controller
             name={EditForm.Email}
-            required
-            onInvalid={inputInvalidHandler}
-            defaultValue={editFrom.email}
-            onChange={inputChnageHandler}
+            control={control}
+            rules={{ required: 'Please, write your email.' }}
+            render={({ field }) => (
+              <Input
+                className={`modal__input ${errors.email || serverError.email ? INPUT_INVALID_CLASS : ''}`}
+                placeholder="Email address"
+                type="email"
+                {...field}
+              />
+            )}
           />
-          <span className="modal__invalid-message">{`Email ${serverError.email || 'needs to be correct.'}`}</span>
+          <span className="modal__invalid-message">
+            {errors.email && (errors.email.message || 'Email needs to be correct. ')}
+            {!errors.email && serverError.email && `Email ${serverError.email}`}
+          </span>
         </label>
 
         <label className="modal__label">
           New password
-          <Input
-            className={`modal__input ${serverError.password ? INPUT_INVALID_CLASS : ''}`}
-            placeholder="New password"
-            type="password"
+          <Controller
             name={EditForm.Password}
-            minLength={6}
-            maxLength={40}
-            onInvalid={inputInvalidHandler}
-            onChange={inputChnageHandler}
+            control={control}
+            rules={{
+              minLength: { value: 6, message: 'Minimum length 6 characters.' },
+              maxLength: { value: 40, message: 'Maximum length 40 characters.' },
+            }}
+            render={({ field }) => (
+              <Input
+                className={`modal__input ${errors.password || serverError.password ? INPUT_INVALID_CLASS : ''}`}
+                placeholder="Password"
+                type="password"
+                {...field}
+              />
+            )}
           />
-          <span className="modal__invalid-message">{`Password ${
-            serverError.password || 'needs to be from 6 to 40 characters.'
-          }`}</span>
+          <span className="modal__invalid-message">
+            {errors.password && (errors.password.message || 'Password needs to be from 6 to 40 characters. ')}
+            {!errors.password && serverError.password && `Password ${serverError.password}.`}
+          </span>
         </label>
 
         <label className="modal__label">
           Avatar image (url)
-          <Input
-            className="modal__input"
-            placeholder="Avatar image"
-            type="url"
+          <Controller
             name={EditForm.Image}
-            onInvalid={inputInvalidHandler}
-            defaultValue={editFrom.image || ''}
-            onChange={inputChnageHandler}
+            control={control}
+            rules={{}}
+            render={({ field }) => <Input className="modal__input" placeholder="Avatar image" type="url" {...field} />}
           />
-          <span className="modal__invalid-message">Image needs to be correct url.</span>
+          <span className="modal__invalid-message">
+            {errors.image && (errors.image.message || 'Image needs to be correct url. ')}
+          </span>
         </label>
 
         <Button className="modal__submit" type="primary" htmlType="submit">

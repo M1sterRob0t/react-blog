@@ -32,7 +32,7 @@ export type TUserLoginRequest = {
 export type TUserEdit = {
   email?: string;
   username?: string;
-  newPassword?: string;
+  password?: string;
   image?: null | string;
 };
 

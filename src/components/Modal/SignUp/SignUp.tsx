@@ -2,7 +2,8 @@ import { useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { Link, Navigate } from 'react-router-dom';
 import { Input, Typography, Button } from 'antd';
-import { useForm, Controller, SubmitHandler } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
+import type { SubmitHandler } from 'react-hook-form';
 
 import { usePostNewUserMutation } from '../../../services/api';
 import type { TNewUserRequest } from '../../../types/users';
