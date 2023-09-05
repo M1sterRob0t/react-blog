@@ -97,6 +97,7 @@ export const api = createApi({
         method: 'POST',
         body: user,
       }),
+      invalidatesTags: ['Articles', 'Article'],
     }),
     putUpdatedUser: builder.mutation<TUserResponse, TUserEditRequest>({
       query: (user) => ({

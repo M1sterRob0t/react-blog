@@ -1,10 +1,11 @@
-import { FormEvent, useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { Link, Navigate } from 'react-router-dom';
 import { Input, Typography, Button } from 'antd';
+import { useForm, Controller, SubmitHandler } from 'react-hook-form';
 
 import { usePostNewUserMutation } from '../../../services/api';
-import type { TNewUser, TNewUserRequest } from '../../../types/users';
+import type { TNewUserRequest } from '../../../types/users';
 import type { TServerErrorResponse } from '../../../types/registration';
 import { AppRoute, INPUT_INVALID_CLASS, errorToastConfig, successToastConfig } from '../../../constants';
 import Spinner from '../../Spinner';
@@ -16,17 +17,19 @@ import { addUserAction } from '../../../state/userReducer';
 const { Title } = Typography;
 
 const SignUpForm = {
-  Username: 'username',
-  Email: 'email',
-  Password: 'password',
-  RepeatedPassword: 'repeated-password',
-  Agreement: 'agreement',
+  Username: 'username' as const,
+  Email: 'email' as const,
+  Password: 'password' as const,
+  RepeatedPassword: 'repeatedPassword' as const,
+  Agreement: 'agreement' as const,
 };
 
-const formInfoDefault: TNewUser = {
-  username: '',
-  email: '',
-  password: '',
+type TSignUpFormData = {
+  username: string;
+  email: string;
+  password: string;
+  repeatedPassword: string;
+  agreement: string;
 };
 
 interface ISignUpProps {
@@ -35,43 +38,25 @@ interface ISignUpProps {
 
 function SignUp(props: ISignUpProps): JSX.Element {
   const { className } = props;
-  const [formInfo, setFormInfo] = useState(formInfoDefault);
   const [postNewUser, { error, isError, isSuccess, isLoading, data }] = usePostNewUserMutation();
   const serverError = processServerError(error);
   const dispatch = useAppDispatch();
-
-  function formSubmitHandler(evt: FormEvent<HTMLFormElement>): void {
-    evt.preventDefault();
-    const form = evt.target as HTMLFormElement;
-    const formData = new FormData(form);
-
-    const repeatedPassInput = form.querySelector(`input[name="${SignUpForm.RepeatedPassword}"]`) as HTMLInputElement;
-    const username = formData.get(SignUpForm.Username) as string;
-    const email = formData.get(SignUpForm.Email) as string;
-    const password = formData.get(SignUpForm.Password) as string;
-    const repeatedPass = formData.get(SignUpForm.RepeatedPassword) as string;
-
-    if (password !== repeatedPass) {
-      repeatedPassInput.classList.add(INPUT_INVALID_CLASS);
-      return;
-    }
-
-    const newUser: TNewUserRequest = { user: { username, email, password } };
-
-    setFormInfo({ username, email, password });
-    postNewUser(newUser);
-  }
-
-  function inputInvalidHandler(evt: FormEvent<HTMLInputElement>): void {
-    const input = evt.target as HTMLInputElement;
-    if (input.validity.valid) input.classList.remove(INPUT_INVALID_CLASS);
-    else input.classList.add(INPUT_INVALID_CLASS);
-  }
-
-  function inputChnageHandler(evt: FormEvent<HTMLInputElement>): void {
-    const input = evt.target as HTMLInputElement;
-    if (input.validity.valid) input.classList.remove(INPUT_INVALID_CLASS);
-  }
+  const {
+    control,
+    handleSubmit,
+    setError,
+    formState: { errors },
+  } = useForm<TSignUpFormData>({
+    defaultValues: {
+      username: '',
+      email: '',
+      password: '',
+      repeatedPassword: '',
+      agreement: 'yes',
+    },
+    mode: 'onSubmit',
+    reValidateMode: 'onSubmit',
+  });
 
   useEffect(() => {
     if (isSuccess && data) {
@@ -94,89 +79,128 @@ function SignUp(props: ISignUpProps): JSX.Element {
     }
   }
 
+  const formSubmitHandler: SubmitHandler<TSignUpFormData> = (data) => {
+    if (data.password !== data.repeatedPassword) {
+      setError(SignUpForm.RepeatedPassword, {
+        type: 'manual',
+        message: 'Password must match.',
+      });
+      return;
+    }
+
+    const newUser: TNewUserRequest = { user: { username: data.username, email: data.email, password: data.password } };
+
+    postNewUser(newUser);
+  };
+  console.log(errors);
   return (
     <section className={`${className} modal`}>
       <Title level={4} className="modal__title">
         Create new account
       </Title>
-      <form className="modal__form" onSubmit={formSubmitHandler}>
+      <form className="modal__form" onSubmit={handleSubmit(formSubmitHandler)}>
         <label className="modal__label">
           Username
-          <Input
-            className={`modal__input ${serverError.username ? INPUT_INVALID_CLASS : ''}`}
-            placeholder="Username"
+          <Controller
             name={SignUpForm.Username}
-            type="text"
-            minLength={3}
-            maxLength={20}
-            required
-            onInvalid={inputInvalidHandler}
-            onChange={inputChnageHandler}
-            defaultValue={formInfo.username}
+            control={control}
+            rules={{
+              required: 'Please, write your name.',
+              minLength: { value: 3, message: 'Minimum length 3 characters.' },
+              maxLength: { value: 20, message: 'Maximum length 20 characters.' },
+            }}
+            render={({ field }) => (
+              <Input
+                className={`modal__input ${errors.username || serverError.username ? INPUT_INVALID_CLASS : ''}`}
+                placeholder="Username"
+                type="text"
+                {...field}
+              />
+            )}
           />
           <span className="modal__invalid-message">
-            Username {serverError.username || 'needs to be from 3 to 20 characters.'}
+            {errors.username && (errors.username.message || 'Username needs to be from 3 to 20 characters. ')}
+            {!errors.username && serverError.username && `Username ${serverError.username}.`}
           </span>
         </label>
 
         <label className="modal__label">
           Email address
-          <Input
-            className={`modal__input ${serverError.email ? INPUT_INVALID_CLASS : ''}`}
-            placeholder="Email address"
+          <Controller
             name={SignUpForm.Email}
-            type="email"
-            required
-            onInvalid={inputInvalidHandler}
-            onChange={inputChnageHandler}
-            defaultValue={formInfo.email}
+            control={control}
+            rules={{ required: 'Please, write your email.' }}
+            render={({ field }) => (
+              <Input
+                className={`modal__input ${errors.email || serverError.email ? INPUT_INVALID_CLASS : ''}`}
+                placeholder="Email address"
+                type="email"
+                {...field}
+              />
+            )}
           />
-          <span className="modal__invalid-message">Email {serverError.email || 'needs to be correct.'}</span>
+          <span className="modal__invalid-message">
+            {errors.email && (errors.email.message || 'Email needs to be correct. ')}
+            {!errors.email && serverError.email && `Email ${serverError.email}`}
+          </span>
         </label>
 
         <label className="modal__label">
           Password
-          <Input
-            className={`modal__input ${serverError.password ? INPUT_INVALID_CLASS : ''}`}
-            placeholder="Password"
-            type="password"
+          <Controller
             name={SignUpForm.Password}
-            minLength={6}
-            maxLength={40}
-            required
-            onInvalid={inputInvalidHandler}
-            onChange={inputChnageHandler}
-            defaultValue={formInfo.password}
+            control={control}
+            rules={{
+              required: 'Please, write your password.',
+              minLength: { value: 6, message: 'Minimum length 6 characters.' },
+              maxLength: { value: 40, message: 'Maximum length 40 characters.' },
+            }}
+            render={({ field }) => (
+              <Input
+                className={`modal__input ${errors.password || serverError.password ? INPUT_INVALID_CLASS : ''}`}
+                placeholder="Password"
+                type="password"
+                {...field}
+              />
+            )}
           />
-          <span className="modal__invalid-message">{`Password ${
-            serverError.password || 'needs to be from 6 to 40 characters.'
-          }`}</span>
+          <span className="modal__invalid-message">
+            {errors.password && (errors.password.message || 'Password needs to be from 6 to 40 characters. ')}
+            {!errors.password && serverError.password && `Password ${serverError.password}.`}
+          </span>
         </label>
 
         <label className="modal__label">
           Repeat Password
-          <Input
-            className="modal__input"
-            placeholder="Password"
-            type="password"
+          <Controller
             name={SignUpForm.RepeatedPassword}
-            minLength={6}
-            maxLength={40}
-            required
-            onInvalid={inputInvalidHandler}
-            onChange={inputChnageHandler}
-            defaultValue={formInfo.password}
+            control={control}
+            rules={{
+              required: 'Please, write your password.',
+              minLength: { value: 6, message: 'Minimum length 6 characters.' },
+              maxLength: { value: 40, message: 'Maximum length 40 characters.' },
+            }}
+            render={({ field }) => (
+              <Input
+                className={`modal__input ${errors.repeatedPassword || serverError.password ? INPUT_INVALID_CLASS : ''}`}
+                placeholder="Password"
+                type="password"
+                {...field}
+              />
+            )}
           />
-          <span className="modal__invalid-message">Passwords must match.</span>
+          <span className="modal__invalid-message">
+            {errors.repeatedPassword && (errors.repeatedPassword.message || 'Passwords must match.')}
+          </span>
         </label>
+
         <label className="modal__checkbox-label">
-          <Input
-            className="modal__checkbox"
-            type="checkbox"
+          <Controller
             name={SignUpForm.Agreement}
-            value="yes"
-            defaultChecked
-            required
+            control={control}
+            render={({ field }) => (
+              <Input className="modal__checkbox" type="checkbox" defaultChecked required {...field} />
+            )}
           />
           <span>I agree to the processing of my personal information</span>
         </label>
