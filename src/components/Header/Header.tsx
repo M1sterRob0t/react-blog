@@ -29,9 +29,7 @@ export default function Header(props: IHeaderProps): JSX.Element {
         {user ? (
           <div className="header__auth-user">
             <Link to={AppRoute.NewArticle}>
-              <Button className="header__create-article" onClick={() => console.log('create')}>
-                Create article
-              </Button>
+              <Button className="header__create-article">Create article</Button>
             </Link>
             <div className="header__user-profile">
               <Link to={AppRoute.Profile} className="header__user-name">

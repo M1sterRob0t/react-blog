@@ -87,8 +87,6 @@ function EditProfile(props: IEditProfileProps): JSX.Element {
 
     const isUpdateRequired = Boolean(Object.keys(updatedUser.user).length);
 
-    console.log(updatedUser);
-
     if (isUpdateRequired) {
       updateUser(updatedUser);
     } else {
