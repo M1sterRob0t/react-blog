@@ -6,7 +6,7 @@ const antIcon = <LoadingOutlined style={{ fontSize: 120 }} spin />;
 function Spinner(): JSX.Element {
   return (
     <div className="spinner">
-      <Spin className="spinner__inner" indicator={antIcon} />
+      <Spin className="spinner__inner" indicator={antIcon} data-testid="spinner" />
     </div>
   );
 }
