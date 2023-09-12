@@ -9,7 +9,7 @@ import { removeUserAction } from '../../state/userReducer';
 import defaultAvatar from './images/default-avatar.png';
 
 interface IHeaderProps {
-  className: string;
+  className?: string;
 }
 
 export default function Header(props: IHeaderProps): JSX.Element {
