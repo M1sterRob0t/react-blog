@@ -63,7 +63,7 @@ export default function Post(props: IPostProps) {
   }
 
   return (
-    <article className={`post ${full && 'post--full'}`}>
+    <article className={`post ${full ? 'post--full' : ''}`} data-testid="post">
       <div className="post__header">
         <Link to={`${AppRoute.Articles}/${article.slug}`} className="post__title">
           {article.title}
