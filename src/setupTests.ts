@@ -3,3 +3,33 @@
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
+import { setupServer } from 'msw/node';
+
+import { handlers } from './mock/mockServiceWorker';
+
+global.matchMedia =
+  global.matchMedia ||
+  function () {
+    return {
+      matches: false,
+      addListener: function () {},
+      removeListener: function () {},
+    };
+  };
+
+export const server = setupServer(...handlers);
+
+beforeAll(() => {
+  // Запустите сервер msw перед началом всех тестов
+  server.listen();
+});
+
+afterEach(() => {
+  // Очистите все запросы между тестами
+  server.resetHandlers();
+});
+
+afterAll(() => {
+  // Закройте сервер msw после всех тестов
+  server.close();
+});

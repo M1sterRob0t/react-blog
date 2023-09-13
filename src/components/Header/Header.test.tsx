@@ -9,7 +9,6 @@ import type { TUserInfo } from '../../types/users';
 
 import Header from './Header';
 
-const mockStore = configureMockStore<TState>();
 type TState = { userInfo: { user: TUserInfo | null } };
 
 const unauthState: TState = {
@@ -29,6 +28,8 @@ const authState: TState = {
     },
   },
 };
+
+const mockStore = configureMockStore<TState>();
 
 describe('Component: Header', () => {
   test('should render correctly when user is Authorized', () => {
