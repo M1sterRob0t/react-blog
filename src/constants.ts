@@ -12,6 +12,8 @@ export enum AppRoute {
   NotFound = '*',
 }
 
+export const BASE_URL = 'https://blog.kata.academy/api';
+
 export const errorToastConfig = {
   position: 'top-center',
   autoClose: 3000,

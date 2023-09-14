@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 import type { TArticleResponse, TArticlesSuccessResponse, TNewArticleRequest } from '../types/articles';
-import { POSTS_PER_PAGE } from '../constants';
+import { BASE_URL, POSTS_PER_PAGE } from '../constants';
 import { TNewUserRequest, TUserResponse, TUserLoginRequest, TUserEditRequest } from '../types/users';
 import type { TRootState } from '../state/store';
 
@@ -16,7 +16,7 @@ export const api = createApi({
   reducerPath: 'api',
   tagTypes: ['Articles', 'Article'],
   baseQuery: fetchBaseQuery({
-    baseUrl: 'https://blog.kata.academy/api',
+    baseUrl: BASE_URL,
     prepareHeaders: (headers, { getState }) => {
       const user = (getState() as TRootState).userInfo.user;
       const token = user ? user.token : '';

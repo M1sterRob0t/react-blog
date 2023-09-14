@@ -3,7 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { Routes, Route, MemoryRouter } from 'react-router-dom';
 import { rest } from 'msw';
 
-import { AppRoute, POSTS_PER_PAGE } from '../../constants';
+import { AppRoute, POSTS_PER_PAGE, BASE_URL } from '../../constants';
 import { getMockArticles } from '../../mock/getMockArticles';
 import { store } from '../../state/store';
 import { server } from '../../setupTests';
@@ -47,7 +47,7 @@ describe('Component: Posts', () => {
     store.dispatch(api.util.invalidateTags(['Articles'])); // убираем предыдущий запрос из кэша rtk query
 
     server.use(
-      rest.get('https://blog.kata.academy/api/articles', (req, res, ctx) => {
+      rest.get(`${BASE_URL}/${AppRoute.Articles}`, (req, res, ctx) => {
         return res(
           ctx.status(500), // HTTP статус 500 - ошибка сервера
           ctx.json({ message: 'Internal Server Error' }) // Тело ответа с сообщением об ошибке
