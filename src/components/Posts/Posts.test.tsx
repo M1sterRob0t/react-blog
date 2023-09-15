@@ -4,14 +4,14 @@ import { Routes, Route, MemoryRouter } from 'react-router-dom';
 import { rest } from 'msw';
 
 import { AppRoute, POSTS_PER_PAGE, BASE_URL } from '../../constants';
-import { getMockArticles } from '../../mock/getMockArticles';
+import { mockArticlesResponse } from '../../mock/mockArticles';
 import { store } from '../../state/store';
-import { server } from '../../setupTests';
+import { server } from '../../mock/mockServiceWorker';
 import { api } from '../../services/api';
 
 import Posts from './Posts';
 
-const mockArticles = getMockArticles().articles.slice(0, POSTS_PER_PAGE);
+const mockArticles = mockArticlesResponse.articles.slice(0, POSTS_PER_PAGE);
 
 describe('Component: Posts', () => {
   test('should render spinner when data is loading', () => {
@@ -47,7 +47,7 @@ describe('Component: Posts', () => {
     store.dispatch(api.util.invalidateTags(['Articles'])); // убираем предыдущий запрос из кэша rtk query
 
     server.use(
-      rest.get(`${BASE_URL}/${AppRoute.Articles}`, (req, res, ctx) => {
+      rest.get(`${BASE_URL}${AppRoute.Articles}`, (req, res, ctx) => {
         return res(
           ctx.status(500), // HTTP статус 500 - ошибка сервера
           ctx.json({ message: 'Internal Server Error' }) // Тело ответа с сообщением об ошибке

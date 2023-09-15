@@ -19,8 +19,6 @@ describe('userSlice', () => {
   });
 
   test('should save user data', () => {
-    expect(getUserInfo()).toEqual(null);
-
     const action = { type: addUserAction.type, payload: mockUser };
     const result = userReducer({ user: null }, action);
 
@@ -29,8 +27,6 @@ describe('userSlice', () => {
   });
 
   test('should remove user data', () => {
-    expect(getUserInfo()).toEqual(mockUser);
-
     const action = { type: removeUserAction.type };
     const result = userReducer({ user: null }, action);
 

@@ -4,11 +4,11 @@ import { Routes, Route, MemoryRouter } from 'react-router-dom';
 
 import { AppRoute, POSTS_PER_PAGE } from '../../../constants';
 import { store } from '../../../state/store';
-import { getMockArticles } from '../../../mock/getMockArticles';
+import { mockArticlesResponse } from '../../../mock/mockArticles';
 
 import PostsList from './PostsList';
 
-const mockArticles = getMockArticles().articles.slice(0, POSTS_PER_PAGE);
+const mockArticles = mockArticlesResponse.articles.slice(0, POSTS_PER_PAGE);
 
 describe('Component: PostsList', () => {
   test('Should render correctly', () => {

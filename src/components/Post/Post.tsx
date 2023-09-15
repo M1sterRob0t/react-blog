@@ -69,11 +69,11 @@ export default function Post(props: IPostProps) {
           {article.title}
         </Link>
         <span className="post__likes">
-          <span className="post__likes-icon-wrapper" onClick={likeButtonClickHandler}>
+          <span className="post__likes-icon-wrapper" onClick={likeButtonClickHandler} data-testid="like-button">
             {article.favorited ? (
-              <HeartFilled className="post__likes-icon post__likes-icon--clicked" />
+              <HeartFilled className="post__likes-icon post__likes-icon--clicked" alt="clicked-like" />
             ) : (
-              <HeartOutlined className="post__likes-icon" />
+              <HeartOutlined className="post__likes-icon" alt="like" />
             )}
           </span>
           <span className="post__likes-count">{article.favoritesCount}</span>
