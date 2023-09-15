@@ -14,6 +14,7 @@ import { AppRoute, errorToastConfig, successToastConfig, INPUT_INVALID_CLASS } f
 import { useAppDispatch } from '../../../hooks/hooks';
 import type { TUserLoginRequest } from '../../../types/users';
 import type { TServerErrorResponse } from '../../../types/registration';
+import { withRedirect } from '../../../hocs/withRedirect';
 
 const { Title } = Typography;
 
@@ -128,4 +129,4 @@ function SignIn(props: ISignInProps): JSX.Element {
   );
 }
 
-export default SignIn;
+export default withRedirect<ISignInProps & JSX.IntrinsicAttributes>(SignIn);

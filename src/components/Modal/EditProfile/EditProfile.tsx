@@ -14,6 +14,7 @@ import { isFetchBaseQueryError, isErrorWithMessage, processServerError } from '.
 import { addUserAction } from '../../../state/userReducer';
 import type { TUserEditRequest } from '../../../types/users';
 import type { TServerErrorResponse } from '../../../types/registration';
+import { withRedirect } from '../../../hocs/withRedirect';
 
 const { Title } = Typography;
 const EditForm = {
@@ -191,4 +192,4 @@ function EditProfile(props: IEditProfileProps): JSX.Element {
   );
 }
 
-export default EditProfile;
+export default withRedirect<IEditProfileProps & JSX.IntrinsicAttributes>(EditProfile);

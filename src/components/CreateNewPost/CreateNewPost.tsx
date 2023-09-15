@@ -12,6 +12,7 @@ import Spinner from '../Spinner';
 import Error from '../Error';
 import type { TNewArticleRequest } from '../../types/articles';
 import type { TServerErrorResponse } from '../../types/registration';
+import { withRedirect } from '../../hocs/withRedirect';
 import './style.css';
 
 const { Title } = Typography;
@@ -292,4 +293,4 @@ function CreateNewPost(props: ICreateNewPostProps): JSX.Element {
   );
 }
 
-export default CreateNewPost;
+export default withRedirect<ICreateNewPostProps & JSX.IntrinsicAttributes>(CreateNewPost);

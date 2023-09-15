@@ -14,6 +14,7 @@ import { isFetchBaseQueryError, isErrorWithMessage, processServerError } from '.
 import '../style.css';
 import { useAppDispatch } from '../../../hooks/hooks';
 import { addUserAction } from '../../../state/userReducer';
+import { withRedirect } from '../../../hocs/withRedirect';
 
 const { Title } = Typography;
 
@@ -222,4 +223,4 @@ function SignUp(props: ISignUpProps): JSX.Element {
   );
 }
 
-export default SignUp;
+export default withRedirect<ISignUpProps & JSX.IntrinsicAttributes>(SignUp);
