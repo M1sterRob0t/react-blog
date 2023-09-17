@@ -89,7 +89,7 @@ export const mockArticlesResponse: TArticlesSuccessResponse = {
       body: 'When you delete something, you’re making a choice to destroy it. To never see it again.',
       createdAt: '2023-08-31T11:46:06.811Z',
       updatedAt: '2023-09-01T05:49:39.354Z',
-      tagList: ['code', 'deleting ', 'things', 'life'],
+      tagList: ['code', 'deleting', 'things', 'life'],
       favorited: false,
       favoritesCount: 2,
       author: {

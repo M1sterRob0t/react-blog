@@ -61,12 +61,12 @@ type TArticalFormData = {
 };
 
 interface ICreateNewPostProps {
-  className: string;
+  className?: string;
   edit?: true;
 }
 
 function CreateNewPost(props: ICreateNewPostProps): JSX.Element {
-  const { className, edit: isEdit } = props;
+  const { className = '', edit: isEdit = false } = props;
   const { slug = '' } = useParams();
 
   const { data, isError: isErrorGet, isLoading: isLoadingGet } = useGetArticleQuery(slug, { skip: !isEdit });
@@ -165,9 +165,9 @@ function CreateNewPost(props: ICreateNewPostProps): JSX.Element {
     return <Navigate to={AppRoute.Articles} />;
   }
 
-  if (isLoadingGet || isLoadingPost || isLoadingPut || (isEdit && !article)) return <Spinner />;
-
   if (isErrorGet) return <Error />;
+
+  if (isLoadingGet || isLoadingPost || isLoadingPut || (isEdit && !article)) return <Spinner />;
 
   if (error) {
     if (isFetchBaseQueryError(error)) {

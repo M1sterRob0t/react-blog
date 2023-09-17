@@ -1,9 +1,11 @@
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 
+import type { TArticleResponse, TNewArticleRequest } from '../types/articles';
 import { AppRoute, BASE_URL } from '../constants';
 
 import { mockArticlesResponse } from './mockArticles';
+import { mockUser } from './mockUser';
 
 const handlers = [
   rest.get(`${BASE_URL}${AppRoute.Articles}`, (req, res, ctx) => {
@@ -31,6 +33,59 @@ const handlers = [
     const updatedArticles = mockArticlesResponse.articles.filter((el) => el.slug !== req.params.slug)!;
     mockArticlesResponse.articles = updatedArticles;
     return res(ctx.status(201));
+  }),
+  rest.post(`${BASE_URL}${AppRoute.Articles}`, async (req, res, ctx) => {
+    const newArticleRequest: TNewArticleRequest = await req.json();
+    const newArticle = newArticleRequest.article;
+    const newArticleResponse: TArticleResponse = {
+      article: {
+        slug: newArticle.title + 'q-heci7a',
+        title: newArticle.title,
+        description: newArticle.description,
+        body: newArticle.body,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        tagList: newArticle.tagList,
+        favorited: false,
+        favoritesCount: 0,
+        author: {
+          username: mockUser.username,
+          image: mockUser.image || '',
+          following: false,
+        },
+      },
+    };
+    mockArticlesResponse.articles.unshift(newArticleResponse.article);
+    return res(ctx.status(200), ctx.json(mockArticlesResponse));
+  }),
+  rest.put(`${BASE_URL}${AppRoute.Article}`, async (req, res, ctx) => {
+    const updatedArticleRequest: TNewArticleRequest = await req.json();
+    const updatedArticle = updatedArticleRequest.article;
+    const newArticleResponse: TArticleResponse = {
+      article: {
+        slug: req.params.slug as string,
+        title: updatedArticle.title,
+        description: updatedArticle.description,
+        body: updatedArticle.body,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        tagList: updatedArticle.tagList,
+        favorited: false,
+        favoritesCount: 0,
+        author: {
+          username: mockUser.username,
+          image: mockUser.image || '',
+          following: false,
+        },
+      },
+    };
+    const index = mockArticlesResponse.articles.findIndex((el) => el.slug === req.params.slug);
+    mockArticlesResponse.articles = [
+      ...mockArticlesResponse.articles.slice(0, index),
+      newArticleResponse.article,
+      ...mockArticlesResponse.articles.slice(index + 1),
+    ];
+    return res(ctx.status(200), ctx.json(newArticleResponse));
   }),
 ];
 
