@@ -1,16 +1,26 @@
 export const POSTS_PER_PAGE = 5;
 export const MAX_POSTS = 570;
+
 export enum AppRoute {
   Root = '/',
   Articles = '/articles',
-  Article = '/articles/:name',
+  Article = '/articles/:slug',
   Login = '/sign-in',
   Registration = '/sign-up',
   Profile = '/profile',
   NewArticle = '/new-article',
-  EditArticle = '/articles/:name/edit',
+  EditArticle = '/articles/:slug/edit',
   NotFound = '*',
 }
+
+export enum Endpoint {
+  Articles = 'articles',
+  Users = 'users',
+  Login = 'users/login',
+  User = 'user',
+}
+
+export const BASE_URL = 'https://blog.kata.academy/api';
 
 export const errorToastConfig = {
   position: 'top-center',

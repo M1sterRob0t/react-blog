@@ -1,33 +1,31 @@
-import { useEffect } from 'react';
+import { useState } from 'react';
 import { Pagination } from 'antd';
 
 import { POSTS_PER_PAGE, MAX_POSTS } from '../../constants';
-import { useAppDispatch, useAppSelector } from '../../hooks/hooks';
-import { fetchArticles } from '../../state/api-actions';
+import Spinner from '../Spinner';
 import Error from '../Error';
+import { useGetArticlesQuery } from '../../services/api';
+import { formatArticles } from '../../utils';
 
-import PostsList from './PostsList/PostsList';
+import PostsList from './PostsList';
 import './style.css';
 
 function Posts(): JSX.Element {
-  const articles = useAppSelector((state) => state.blog.articles);
-  const isError = useAppSelector((state) => state.blog.isError);
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    dispatch(fetchArticles(1));
-  }, []);
+  const [currentPage, setCurrentPage] = useState(1);
+  const { data, isError, isFetching } = useGetArticlesQuery(currentPage);
+  const articles = data ? formatArticles(data.articles) : [];
 
   if (isError) return <Error />;
-
   return (
     <div className="posts">
-      <PostsList articles={articles} />
+      {isFetching ? <Spinner /> : <PostsList articles={articles} />}
       <Pagination
         className="posts__pagination"
         pageSize={POSTS_PER_PAGE}
         total={MAX_POSTS}
-        onChange={(page) => dispatch(fetchArticles(page))}
+        onChange={(page) => {
+          setCurrentPage(page);
+        }}
         showSizeChanger={false}
       />
     </div>

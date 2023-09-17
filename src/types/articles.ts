@@ -10,15 +10,20 @@ export type TArticle = {
   favoritesCount: number;
   author: {
     username: string;
-    bio: string;
     image: string;
     following: boolean;
   };
 };
 
-export type TArticlesResponse = {
+export type TArticlesSuccessResponse = {
   articles: TArticle[];
   articlesCount: number;
+};
+
+export type TArticlesErrorResponse = {
+  errors: {
+    body: string[];
+  };
 };
 
 export type TArticleResponse = {

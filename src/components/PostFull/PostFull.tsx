@@ -1,29 +1,26 @@
 import { useParams } from 'react-router-dom';
-import { useEffect } from 'react';
 
-import { useAppDispatch, useAppSelector } from '../../hooks/hooks';
 import Post from '../Post';
 import Spinner from '../Spinner';
-import { fetchArticle } from '../../state/api-actions';
-import { withRedirect } from '../../hocs/withRedirect';
 import Error from '../Error';
+import { useGetArticleQuery } from '../../services/api';
+import { formatArticles } from '../../utils';
+import { useAppSelector } from '../../hooks/hooks';
 
 function PostFull(): JSX.Element {
-  const dispatch = useAppDispatch();
-  const article = useAppSelector((state) => state.blog.article);
-  const user = useAppSelector((state) => state.blog.user);
-  const isLoading = useAppSelector((state) => state.blog.isLoading);
-  const isError = useAppSelector((state) => state.blog.isError);
-  const isFromUser = article && user ? article.author.username === user.username : false;
-  const { name } = useParams();
+  const { slug } = useParams();
+  if (!slug) return <Error />;
 
-  useEffect(() => {
-    if (name) dispatch(fetchArticle(name));
-  }, []);
+  const { data, isError, isLoading } = useGetArticleQuery(slug);
+  const user = useAppSelector((state) => state.userInfo.user);
 
   if (isError) return <Error />;
-  if (isLoading || !article) return <Spinner />;
+  if (isLoading || !data) return <Spinner />;
+
+  const article = formatArticles([data.article])[0];
+  const isFromUser = user && article ? article.author.username === user.username : false;
+
   return <Post article={article} full fromUser={isFromUser} />;
 }
 
-export default withRedirect(PostFull);
+export default PostFull;

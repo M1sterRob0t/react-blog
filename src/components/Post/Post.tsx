@@ -1,14 +1,22 @@
-import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { Link, Navigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import { HeartOutlined, HeartFilled } from '@ant-design/icons';
 import { Tag, Button, Popconfirm } from 'antd';
 import { format } from 'date-fns';
 
-import { AppRoute } from '../../constants';
-import type { TArticle } from '../../types/articles';
+import { AppRoute, successToastConfig, errorToastConfig } from '../../constants';
 import './style.css';
-import { useAppDispatch, useAppSelector } from '../../hooks/hooks';
-import { deleteLikeFromArticle, deleteUserArticle, postLikeToArticle } from '../../state/api-actions';
+import {
+  useDeleteArticleMutation,
+  useDeleteLikeFromArticleMutation,
+  usePostLikeToArticleMutation,
+} from '../../services/api';
+import Spinner from '../Spinner';
+import { isFetchBaseQueryError, isErrorWithMessage } from '../../utils';
+import type { TArticle } from '../../types/articles';
+import type { TServerErrorResponse } from '../../types/registration';
+import { useAppSelector } from '../../hooks/hooks';
 
 const DATE_FROMAT = 'MMMM 	d, yyy';
 
@@ -20,36 +28,52 @@ interface IPostProps {
 
 export default function Post(props: IPostProps) {
   const { full, fromUser, article } = props;
-  const dispatch = useAppDispatch();
-  const user = useAppSelector((state) => state.blog.user);
   const date = format(new Date(article.createdAt), DATE_FROMAT);
+  const user = useAppSelector((state) => state.userInfo.user);
 
-  function deleteButtonConfirmHandler(): void {
-    dispatch(deleteUserArticle(article.slug));
-  }
+  const [deleteArticle, { isLoading, isSuccess, error }] = useDeleteArticleMutation();
+  const [postLikeToArticle] = usePostLikeToArticleMutation();
+  const [deleteLikeFromArticle] = useDeleteLikeFromArticleMutation();
 
   function likeButtonClickHandler(): void {
     if (!user) return;
 
     if (article.favorited) {
-      dispatch(deleteLikeFromArticle(article.slug));
+      deleteLikeFromArticle(article.slug);
     } else {
-      dispatch(postLikeToArticle(article.slug));
+      postLikeToArticle(article.slug);
+    }
+  }
+
+  if (isLoading) return <Spinner />;
+
+  if (isSuccess) {
+    toast('The article has been successfully removed!', successToastConfig);
+    return <Navigate to={AppRoute.Articles} />;
+  }
+
+  if (error) {
+    if (isFetchBaseQueryError(error)) {
+      const serverErrorObj = error.data as TServerErrorResponse;
+      const errorMessage = `Status: ${error.status}. ${serverErrorObj.errors.message}.`;
+      toast(errorMessage, errorToastConfig);
+    } else if (isErrorWithMessage(error)) {
+      toast(error.message, errorToastConfig);
     }
   }
 
   return (
-    <article className={`post ${full && 'post--full'}`}>
+    <article className={`post ${full ? 'post--full' : ''}`} data-testid="post">
       <div className="post__header">
         <Link to={`${AppRoute.Articles}/${article.slug}`} className="post__title">
           {article.title}
         </Link>
         <span className="post__likes">
-          <span className="post__likes-icon-wrapper" onClick={likeButtonClickHandler}>
+          <span className="post__likes-icon-wrapper" onClick={likeButtonClickHandler} data-testid="like-button">
             {article.favorited ? (
-              <HeartFilled className="post__likes-icon post__likes-icon--clicked" />
+              <HeartFilled className="post__likes-icon post__likes-icon--clicked" alt="clicked-like" />
             ) : (
-              <HeartOutlined className="post__likes-icon" />
+              <HeartOutlined className="post__likes-icon" alt="like" />
             )}
           </span>
           <span className="post__likes-count">{article.favoritesCount}</span>
@@ -70,7 +94,7 @@ export default function Post(props: IPostProps) {
             <Popconfirm
               className="post__popconfirm"
               title="Are you sure to delete this article?"
-              onConfirm={deleteButtonConfirmHandler}
+              onConfirm={() => deleteArticle(article.slug)}
               okText="Yes"
               cancelText="No"
               placement="rightTop"
@@ -88,7 +112,7 @@ export default function Post(props: IPostProps) {
       <div className="post__desc">
         <div className="post__tegs-list">
           {article.tagList.map((tag) => (
-            <Tag className="post__tegs-item" key={tag.toLowerCase()}>
+            <Tag className="post__tegs-item" key={tag.toLowerCase()} style={{ userSelect: 'none' }}>
               {tag}
             </Tag>
           ))}

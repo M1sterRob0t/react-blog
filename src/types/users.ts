@@ -16,7 +16,7 @@ export type TUserInfo = {
   image: null | string;
 };
 
-export type TNewUserResponse = {
+export type TUserResponse = {
   user: TUserInfo;
 };
 
@@ -32,7 +32,7 @@ export type TUserLoginRequest = {
 export type TUserEdit = {
   email?: string;
   username?: string;
-  newPassword?: string;
+  password?: string;
   image?: null | string;
 };
 

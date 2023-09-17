@@ -1,151 +1,187 @@
-import { FormEvent, useState } from 'react';
+import { Navigate, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import { Input, Typography, Button } from 'antd';
 import { toast } from 'react-toastify';
+import { useForm, Controller } from 'react-hook-form';
+import type { SubmitHandler } from 'react-hook-form';
 
-import { successToastConfig, INPUT_INVALID_CLASS } from '../../../constants';
+import { AppRoute, successToastConfig, errorToastConfig, INPUT_INVALID_CLASS } from '../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks/hooks';
-import { postUpdatedUser } from '../../../state/api-actions';
-import { TUserEditRequest } from '../../../types/users';
 import '../style.css';
-import { clearErrorAction } from '../../../state/reducer';
-import { withLoading } from '../../../hocs/withLoading';
+import { usePutUpdatedUserMutation } from '../../../services/api';
+import Spinner from '../../Spinner';
+import { isFetchBaseQueryError, isErrorWithMessage, processServerError } from '../../../utils';
+import { addUserAction } from '../../../state/userReducer';
+import type { TUserEditRequest } from '../../../types/users';
+import type { TServerErrorResponse } from '../../../types/registration';
 import { withRedirect } from '../../../hocs/withRedirect';
 
+const { Title } = Typography;
 const EditForm = {
-  Username: 'username',
-  Email: 'email',
-  Password: 'password',
-  Image: 'image',
+  Username: 'username' as const,
+  Email: 'email' as const,
+  Password: 'password' as const,
+  Image: 'image' as const,
+};
+
+type TEditFormData = {
+  password?: string;
+  email?: string;
+  username?: string;
+  image?: string;
 };
 
 interface IEditProfileProps {
-  className: string;
+  className?: string;
 }
-const { Title } = Typography;
 
 function EditProfile(props: IEditProfileProps): JSX.Element {
-  const { className } = props;
+  const { className = '' } = props;
+  const user = useAppSelector((state) => state.userInfo.user);
   const dispatch = useAppDispatch();
+  const [updateUser, { isLoading, isSuccess, isError, error, data }] = usePutUpdatedUserMutation();
+  const serverError = processServerError(error);
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm<TEditFormData>({
+    defaultValues: {
+      username: user ? user.username : '',
+      email: user ? user.email : '',
+      password: '',
+      image: user && user.image ? user.image : '',
+    },
+  });
+  const navigate = useNavigate();
 
-  const user = useAppSelector((state) => state.blog.user);
-  const error = useAppSelector((state) => state.blog.serverError);
+  useEffect(() => {
+    if (isSuccess && data) {
+      dispatch(addUserAction(data.user));
+      toast('Your profile successfully updated!', successToastConfig);
+    }
+  }, [isSuccess]);
 
-  const editFormDefault = {
-    username: user?.username,
-    email: user?.email,
-    image: user?.image,
-  };
+  if (isLoading) return <Spinner />;
 
-  const [editFrom, setFormInfo] = useState(editFormDefault);
+  if (isSuccess) return <Navigate to={AppRoute.Articles} />;
 
-  function formSubmitHandler(evt: FormEvent<HTMLFormElement>) {
-    evt.preventDefault();
-    const form = evt.target as HTMLFormElement;
-    const formData = new FormData(form);
+  if (isError) {
+    if (isFetchBaseQueryError(error) && error.status !== 422) {
+      const serverErrorObj = error.data as TServerErrorResponse;
+      const errorMessage = `Status: ${error.status}. ${serverErrorObj.errors.message}.`;
+      toast(errorMessage, errorToastConfig);
+    } else if (isErrorWithMessage(error)) {
+      toast(error.message, errorToastConfig);
+    }
+  }
 
-    const username = formData.get(EditForm.Username) as string;
-    const email = formData.get(EditForm.Email) as string;
-    const newPassword = formData.get(EditForm.Password) as string;
-    const image = (formData.get(EditForm.Image) as string) || null;
+  const formSubmitHandler: SubmitHandler<TEditFormData> = (data) => {
+    const { username, email, password, image } = data;
+    const updatedUser: TUserEditRequest = { user: { email, image, username, password } };
 
-    const updatedUser: TUserEditRequest = { user: { email, image, username, newPassword } };
-
-    if (!newPassword) delete updatedUser.user.newPassword;
+    if (!password) delete updatedUser.user.password;
     if (!image) delete updatedUser.user.image;
     if (user && user.username === username) delete updatedUser.user.username;
     if (user && user.email === email) delete updatedUser.user.email;
     if (user && user.image === image) delete updatedUser.user.image;
 
     const isUpdateRequired = Boolean(Object.keys(updatedUser.user).length);
+
     if (isUpdateRequired) {
-      setFormInfo({ username, email, image });
-      dispatch(postUpdatedUser(updatedUser));
+      updateUser(updatedUser);
     } else {
-      toast('Successfully saved!', successToastConfig);
-      dispatch(clearErrorAction());
+      navigate(AppRoute.Root);
     }
-  }
-
-  function inputInvalidHandler(evt: FormEvent<HTMLInputElement>): void {
-    const input = evt.target as HTMLInputElement;
-    if (input.validity.valid) input.classList.remove(INPUT_INVALID_CLASS);
-    else input.classList.add(INPUT_INVALID_CLASS);
-  }
-
-  function inputChnageHandler(evt: FormEvent<HTMLInputElement>): void {
-    const input = evt.target as HTMLInputElement;
-    if (input.validity.valid) input.classList.remove(INPUT_INVALID_CLASS);
-  }
+  };
 
   return (
     <section className={`${className} modal`}>
       <Title level={4} className="modal__title">
         Edit Profile
       </Title>
-      <form className="modal__form" onSubmit={formSubmitHandler}>
+      <form className="modal__form" onSubmit={handleSubmit(formSubmitHandler)}>
         <label className="modal__label">
           Username
-          <Input
-            className={`modal__input ${error && error.username ? INPUT_INVALID_CLASS : ''}`}
-            placeholder="Username"
-            type="text"
+          <Controller
             name={EditForm.Username}
-            minLength={3}
-            maxLength={20}
-            required
-            onInvalid={inputInvalidHandler}
-            defaultValue={editFrom.username}
-            onChange={inputChnageHandler}
+            control={control}
+            rules={{
+              required: 'Please, write your name.',
+              minLength: { value: 3, message: 'Minimum length 3 characters.' },
+              maxLength: { value: 20, message: 'Maximum length 20 characters.' },
+            }}
+            render={({ field }) => (
+              <Input
+                className={`modal__input ${errors.username || serverError.username ? INPUT_INVALID_CLASS : ''}`}
+                placeholder="Username"
+                type="text"
+                {...field}
+              />
+            )}
           />
           <span className="modal__invalid-message">
-            Username {error?.username || 'needs to be from 3 to 20 characters.'}
+            {errors.username && (errors.username.message || 'Username needs to be from 3 to 20 characters. ')}
+            {!errors.username && serverError.username && `Username ${serverError.username}.`}
           </span>
         </label>
 
         <label className="modal__label">
           Email address
-          <Input
-            className={`modal__input ${error && error.email ? INPUT_INVALID_CLASS : ''}`}
-            placeholder="Email address"
-            type="email"
+          <Controller
             name={EditForm.Email}
-            required
-            onInvalid={inputInvalidHandler}
-            defaultValue={editFrom.email}
-            onChange={inputChnageHandler}
+            control={control}
+            rules={{ required: 'Please, write your email.' }}
+            render={({ field }) => (
+              <Input
+                className={`modal__input ${errors.email || serverError.email ? INPUT_INVALID_CLASS : ''}`}
+                placeholder="Email address"
+                type="email"
+                {...field}
+              />
+            )}
           />
-          <span className="modal__invalid-message">{`Email ${error?.email || 'needs to be correct.'}`}</span>
+          <span className="modal__invalid-message">
+            {errors.email && (errors.email.message || 'Email needs to be correct. ')}
+            {!errors.email && serverError.email && `Email ${serverError.email}`}
+          </span>
         </label>
 
         <label className="modal__label">
           New password
-          <Input
-            className={`modal__input ${error && error.password ? INPUT_INVALID_CLASS : ''}`}
-            placeholder="New password"
-            type="password"
+          <Controller
             name={EditForm.Password}
-            minLength={6}
-            maxLength={40}
-            onInvalid={inputInvalidHandler}
-            onChange={inputChnageHandler}
+            control={control}
+            rules={{
+              minLength: { value: 6, message: 'Minimum length 6 characters.' },
+              maxLength: { value: 40, message: 'Maximum length 40 characters.' },
+            }}
+            render={({ field }) => (
+              <Input
+                className={`modal__input ${errors.password || serverError.password ? INPUT_INVALID_CLASS : ''}`}
+                placeholder="Password"
+                type="password"
+                {...field}
+              />
+            )}
           />
-          <span className="modal__invalid-message">{`Password ${
-            error?.password || 'needs to be from 6 to 40 characters.'
-          }`}</span>
+          <span className="modal__invalid-message">
+            {errors.password && (errors.password.message || 'Password needs to be from 6 to 40 characters. ')}
+            {!errors.password && serverError.password && `Password ${serverError.password}.`}
+          </span>
         </label>
 
         <label className="modal__label">
           Avatar image (url)
-          <Input
-            className="modal__input"
-            placeholder="Avatar image"
-            type="url"
+          <Controller
             name={EditForm.Image}
-            onInvalid={inputInvalidHandler}
-            defaultValue={editFrom.image || ''}
-            onChange={inputChnageHandler}
+            control={control}
+            rules={{}}
+            render={({ field }) => <Input className="modal__input" placeholder="Avatar image" type="url" {...field} />}
           />
-          <span className="modal__invalid-message">Image needs to be correct url.</span>
+          <span className="modal__invalid-message">
+            {errors.image && (errors.image.message || 'Image needs to be correct url. ')}
+          </span>
         </label>
 
         <Button className="modal__submit" type="primary" htmlType="submit">
@@ -156,4 +192,4 @@ function EditProfile(props: IEditProfileProps): JSX.Element {
   );
 }
 
-export default withRedirect(withLoading<IEditProfileProps & JSX.IntrinsicAttributes>(EditProfile));
+export default withRedirect<IEditProfileProps & JSX.IntrinsicAttributes>(EditProfile);

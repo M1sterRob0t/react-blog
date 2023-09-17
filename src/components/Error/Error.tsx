@@ -9,7 +9,7 @@ function Error(): JSX.Element {
   return (
     <Space className="error" direction="vertical">
       <Title className="error__title" level={1}>
-        <img src={ErrorImage} width="50" height="50" />
+        <img src={ErrorImage} width="50" height="50" alt="Black cat looking at you." />
         Oops!
       </Title>
       <Text className="error__message-main">Sorry, an unexpected error has occured.</Text>

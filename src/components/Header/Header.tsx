@@ -4,17 +4,17 @@ import { Button } from 'antd';
 
 import { AppRoute } from '../../constants';
 import { useAppDispatch, useAppSelector } from '../../hooks/hooks';
-import { logoutAction, clearArticleAction } from '../../state/reducer';
+import { removeUserAction } from '../../state/userReducer';
 
 import defaultAvatar from './images/default-avatar.png';
 
 interface IHeaderProps {
-  className: string;
+  className?: string;
 }
 
 export default function Header(props: IHeaderProps): JSX.Element {
   const { className } = props;
-  const user = useAppSelector((state) => state.blog.user);
+  const user = useAppSelector((state) => state.userInfo.user);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -29,9 +29,7 @@ export default function Header(props: IHeaderProps): JSX.Element {
         {user ? (
           <div className="header__auth-user">
             <Link to={AppRoute.NewArticle}>
-              <Button className="header__create-article" onClick={() => dispatch(clearArticleAction())}>
-                Create article
-              </Button>
+              <Button className="header__create-article">Create article</Button>
             </Link>
             <div className="header__user-profile">
               <Link to={AppRoute.Profile} className="header__user-name">
@@ -41,7 +39,7 @@ export default function Header(props: IHeaderProps): JSX.Element {
                 <img src={user.image || defaultAvatar} width="46" height="46" alt="user avatar " />
               </Link>
             </div>
-            <Button className="header__logout" onClick={() => dispatch(logoutAction())}>
+            <Button className="header__logout" onClick={() => dispatch(removeUserAction())}>
               Log Out
             </Button>
           </div>

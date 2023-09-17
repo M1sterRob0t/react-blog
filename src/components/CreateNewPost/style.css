@@ -87,3 +87,22 @@
   border-radius: 4px;
   font-size: 16px;
 }
+
+.create-new-post__input--invalid {
+  border: 1px solid #F5222D;
+}
+
+.create-new-post__invalid-message {
+  display: none;
+  color: #F5222D;
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.create-new-post__input--invalid + .create-new-post__invalid-message {
+  display: block;
+}
+
+.create-new-post__tag-item {
+  display: flex;
+}

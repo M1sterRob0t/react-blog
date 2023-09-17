@@ -1,14 +1,15 @@
 import { configureStore } from '@reduxjs/toolkit';
-import type { ThunkAction, Action } from '@reduxjs/toolkit';
 
-import articlesReducer from './reducer';
+import { api } from '../services/api';
+
+import userInfo from './userReducer';
 
 export const store = configureStore({
   reducer: {
-    blog: articlesReducer,
+    userInfo,
+    [api.reducerPath]: api.reducer,
   },
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(api.middleware),
 });
 
-export type AppDispatch = typeof store.dispatch;
-export type RootState = ReturnType<typeof store.getState>;
-export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, RootState, unknown, Action<string>>;
+export type TRootState = ReturnType<typeof store.getState>;
