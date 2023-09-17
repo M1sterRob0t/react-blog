@@ -3,10 +3,10 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { Routes, Route, MemoryRouter } from 'react-router-dom';
 
 import { AppRoute } from '../../constants';
-import { mockArticlesResponse } from '../../mock/mockArticles';
-import { store } from '../../state/store';
-import { mockUser } from '../../mock/mockUser';
 import { addUserAction } from '../../state/userReducer';
+import { createMockStore } from '../../mock/createMockStore';
+import { mockUser } from '../../mock/mockUser';
+import { mockArticlesResponse } from '../../mock/mockArticles';
 
 import Post from './Post';
 
@@ -16,6 +16,8 @@ const mockUrl = `${AppRoute.Articles}/${mockArticle.slug}`;
 
 describe('Component: Posts', () => {
   test('should render full Post correctly', async () => {
+    const store = createMockStore();
+
     render(
       <Provider store={store}>
         <MemoryRouter initialEntries={[mockUrl]}>
@@ -35,6 +37,8 @@ describe('Component: Posts', () => {
   });
 
   test('should render short Post correctly', async () => {
+    const store = createMockStore();
+
     render(
       <Provider store={store}>
         <MemoryRouter initialEntries={[mockUrl]}>
@@ -54,6 +58,7 @@ describe('Component: Posts', () => {
   });
 
   test('should render full Post from user correctly', async () => {
+    const store = createMockStore();
     store.dispatch(addUserAction(mockUser));
 
     render(

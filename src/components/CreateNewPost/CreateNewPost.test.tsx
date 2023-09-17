@@ -7,11 +7,11 @@ import { act } from 'react-dom/test-utils';
 
 import { AppRoute, BASE_URL } from '../../constants';
 import { mockArticlesResponse } from '../../mock/mockArticles';
-import { store } from '../../state/store';
 import { server } from '../../mock/mockServiceWorker';
 import { api } from '../../services/api';
 import { mockUser } from '../../mock/mockUser';
-import { addUserAction, removeUserAction } from '../../state/userReducer';
+import { addUserAction } from '../../state/userReducer';
+import { createMockStore } from '../../mock/createMockStore';
 import Posts from '../Posts';
 
 import CreateNewPost from './CreateNewPost';
@@ -21,13 +21,10 @@ const mockArticle = mockArticles[5];
 const mockUrl = `${AppRoute.Articles}/${mockArticle.slug}/edit`;
 
 describe('Component: CreateNewPost', () => {
-  beforeEach(() => {
-    act(() => {
-      store.dispatch(addUserAction(mockUser));
-    });
-  });
-
   test('should render correctly when user create an article', () => {
+    const store = createMockStore();
+    store.dispatch(addUserAction(mockUser));
+
     render(
       <Provider store={store}>
         <MemoryRouter initialEntries={[AppRoute.NewArticle]}>
@@ -56,6 +53,9 @@ describe('Component: CreateNewPost', () => {
   });
 
   test('should render correctly when user edit an article', async () => {
+    const store = createMockStore();
+    store.dispatch(addUserAction(mockUser));
+
     render(
       <Provider store={store}>
         <MemoryRouter initialEntries={[mockUrl]}>
@@ -82,6 +82,9 @@ describe('Component: CreateNewPost', () => {
   });
 
   test('should show Spinner while data is loading', async () => {
+    const store = createMockStore();
+    store.dispatch(addUserAction(mockUser));
+
     store.dispatch(api.util.invalidateTags(['Articles', 'Article']));
     render(
       <Provider store={store}>
@@ -97,6 +100,8 @@ describe('Component: CreateNewPost', () => {
   });
 
   test('should render Error when server response status is not 200', async () => {
+    const store = createMockStore();
+    store.dispatch(addUserAction(mockUser));
     store.dispatch(api.util.invalidateTags(['Articles', 'Article']));
 
     server.use(
@@ -123,7 +128,7 @@ describe('Component: CreateNewPost', () => {
   });
 
   test('should redirect to the Login Page if user is not authorized', async () => {
-    store.dispatch(removeUserAction());
+    const store = createMockStore();
 
     render(
       <Provider store={store}>
@@ -140,6 +145,9 @@ describe('Component: CreateNewPost', () => {
   });
 
   test('should dispaly values when user type in fields', async () => {
+    const store = createMockStore();
+    store.dispatch(addUserAction(mockUser));
+
     render(
       <Provider store={store}>
         <MemoryRouter initialEntries={[AppRoute.NewArticle]}>
@@ -150,6 +158,7 @@ describe('Component: CreateNewPost', () => {
         </MemoryRouter>
       </Provider>
     );
+
     await act(async () => {
       await userEvent.type(screen.getByPlaceholderText(/Title/i), 'my title');
       await userEvent.type(screen.getByPlaceholderText(/Short description/i), 'my short desc');
@@ -164,6 +173,9 @@ describe('Component: CreateNewPost', () => {
   });
 
   test('should add new tag when user click add tag button', async () => {
+    const store = createMockStore();
+    store.dispatch(addUserAction(mockUser));
+
     render(
       <Provider store={store}>
         <MemoryRouter initialEntries={[AppRoute.NewArticle]}>
@@ -190,6 +202,9 @@ describe('Component: CreateNewPost', () => {
   });
 
   test('should remove tag when user click remove tag button', async () => {
+    const store = createMockStore();
+    store.dispatch(addUserAction(mockUser));
+
     render(
       <Provider store={store}>
         <MemoryRouter initialEntries={[mockUrl]}>
@@ -212,6 +227,9 @@ describe('Component: CreateNewPost', () => {
   });
 
   test('should send new article to the server and redirect to the Articles Page when user click send button', async () => {
+    const store = createMockStore();
+    store.dispatch(addUserAction(mockUser));
+
     render(
       <Provider store={store}>
         <MemoryRouter initialEntries={[AppRoute.NewArticle]}>
@@ -238,6 +256,9 @@ describe('Component: CreateNewPost', () => {
   });
 
   test('should send updated article to the server and redirect to the Articles Page when user click send button', async () => {
+    const store = createMockStore();
+    store.dispatch(addUserAction(mockUser));
+
     render(
       <Provider store={store}>
         <MemoryRouter initialEntries={[mockUrl]}>

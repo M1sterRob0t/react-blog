@@ -3,13 +3,13 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { Routes, Route, MemoryRouter } from 'react-router-dom';
 import { rest } from 'msw';
 
-import { AppRoute, BASE_URL } from '../../constants';
-import { mockArticlesResponse } from '../../mock/mockArticles';
-import { store } from '../../state/store';
-import { server } from '../../mock/mockServiceWorker';
 import { api } from '../../services/api';
-import { mockUser } from '../../mock/mockUser';
+import { AppRoute, BASE_URL } from '../../constants';
 import { addUserAction } from '../../state/userReducer';
+import { createMockStore } from '../../mock/createMockStore';
+import { server } from '../../mock/mockServiceWorker';
+import { mockArticlesResponse } from '../../mock/mockArticles';
+import { mockUser } from '../../mock/mockUser';
 
 import PostFull from './PostFull';
 
@@ -19,6 +19,8 @@ const mockUrl = `${AppRoute.Articles}/${mockArticle.slug}`;
 
 describe('Component: Posts', () => {
   test('should render Spinner when data is loading', () => {
+    const store = createMockStore();
+
     render(
       <Provider store={store}>
         <MemoryRouter initialEntries={[mockUrl]}>
@@ -32,6 +34,8 @@ describe('Component: Posts', () => {
   });
 
   test('should render Full Post when server response status is 200', async () => {
+    const store = createMockStore();
+
     render(
       <Provider store={store}>
         <MemoryRouter initialEntries={[mockUrl]}>
@@ -51,6 +55,7 @@ describe('Component: Posts', () => {
   });
 
   test('should render Error when server response status is not 200', async () => {
+    const store = createMockStore();
     store.dispatch(api.util.invalidateTags(['Articles', 'Article']));
 
     server.use(
@@ -76,6 +81,7 @@ describe('Component: Posts', () => {
   });
 
   test('should render additional interface when article is written by user', async () => {
+    const store = createMockStore();
     store.dispatch(addUserAction(mockUser));
 
     render(
@@ -95,6 +101,8 @@ describe('Component: Posts', () => {
   });
 
   test('should not render additional interface when article is not written by user', async () => {
+    const store = createMockStore();
+
     render(
       <Provider store={store}>
         <MemoryRouter initialEntries={[mockUrl]}>
@@ -112,6 +120,7 @@ describe('Component: Posts', () => {
   });
 
   test('should increase likes count when like button is clicked first time', async () => {
+    const store = createMockStore();
     store.dispatch(addUserAction(mockUser));
 
     render(
@@ -134,6 +143,7 @@ describe('Component: Posts', () => {
   });
 
   test('should decrease likes count when like button is clicked second time', async () => {
+    const store = createMockStore();
     store.dispatch(addUserAction(mockUser));
 
     render(
@@ -155,6 +165,7 @@ describe('Component: Posts', () => {
   });
 
   test('should navigate to the Edit Article Page when edit button is clicked', async () => {
+    const store = createMockStore();
     store.dispatch(addUserAction(mockUser));
 
     render(
@@ -173,6 +184,7 @@ describe('Component: Posts', () => {
   });
 
   test('should show confirm popup when user clicked delete button', async () => {
+    const store = createMockStore();
     store.dispatch(addUserAction(mockUser));
 
     render(
@@ -190,6 +202,7 @@ describe('Component: Posts', () => {
   });
 
   test('should delete article and navigate to the root page after delete confirmation', async () => {
+    const store = createMockStore();
     store.dispatch(addUserAction(mockUser));
 
     render(

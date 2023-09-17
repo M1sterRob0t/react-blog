@@ -1,40 +1,21 @@
 import { Provider } from 'react-redux';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Routes, Route, MemoryRouter } from 'react-router-dom';
-import { configureMockStore } from '@jedmao/redux-mock-store';
 
-import { removeUserAction } from '../../state/userReducer';
 import { AppRoute } from '../../constants';
-import type { TUserInfo } from '../../types/users';
+import { createMockStore } from '../../mock/createMockStore';
+import { addUserAction } from '../../state/userReducer';
+import { mockUser } from '../../mock/mockUser';
 
 import Header from './Header';
 
-type TState = { userInfo: { user: TUserInfo | null } };
-
-const unauthState: TState = {
-  userInfo: {
-    user: null,
-  },
-};
-
-const authState: TState = {
-  userInfo: {
-    user: {
-      username: 'example',
-      email: 'example@mail.ru',
-      image: null,
-      bio: '',
-      token: '!*&#^!(*@&#^!*(&@#^!*(@&#^*(1asd)',
-    },
-  },
-};
-
-const mockStore = configureMockStore<TState>();
-
 describe('Component: Header', () => {
   test('should render correctly when user is Authorized', () => {
+    const store = createMockStore();
+    store.dispatch(addUserAction(mockUser));
+
     render(
-      <Provider store={mockStore(authState)}>
+      <Provider store={store}>
         <MemoryRouter initialEntries={[AppRoute.Root]}>
           <Header />
         </MemoryRouter>
@@ -47,8 +28,10 @@ describe('Component: Header', () => {
   });
 
   test('should render correctly when user is not Authorized', () => {
+    const store = createMockStore();
+
     render(
-      <Provider store={mockStore(unauthState)}>
+      <Provider store={store}>
         <MemoryRouter initialEntries={[AppRoute.Root]}>
           <Header />
         </MemoryRouter>
@@ -63,8 +46,10 @@ describe('Component: Header', () => {
   });
 
   test('should redirect to the Main Page when logo is clicked', () => {
+    const store = createMockStore();
+
     render(
-      <Provider store={mockStore(authState)}>
+      <Provider store={store}>
         <MemoryRouter initialEntries={[AppRoute.NewArticle]}>
           <Header />
           <Routes>
@@ -82,8 +67,10 @@ describe('Component: Header', () => {
 
   // user is not authorized
   test('should redirect to the Login Page when login button is clicked', () => {
+    const store = createMockStore();
+
     render(
-      <Provider store={mockStore(unauthState)}>
+      <Provider store={store}>
         <MemoryRouter initialEntries={[AppRoute.Root]}>
           <Header />
           <Routes>
@@ -100,8 +87,10 @@ describe('Component: Header', () => {
   });
 
   test('should redirect to the Sign Up Page when sign up button is clicked', () => {
+    const store = createMockStore();
+
     render(
-      <Provider store={mockStore(unauthState)}>
+      <Provider store={store}>
         <MemoryRouter initialEntries={[AppRoute.Root]}>
           <Header />
           <Routes>
@@ -119,8 +108,11 @@ describe('Component: Header', () => {
 
   // user is authorized
   test('should redirect to the Create New Article Page when create article button is clicked', () => {
+    const store = createMockStore();
+    store.dispatch(addUserAction(mockUser));
+
     render(
-      <Provider store={mockStore(authState)}>
+      <Provider store={store}>
         <MemoryRouter initialEntries={[AppRoute.Root]}>
           <Header />
           <Routes>
@@ -137,7 +129,9 @@ describe('Component: Header', () => {
   });
 
   test('should redirect to the Profile Page when profile button is clicked', () => {
-    const store = mockStore(authState);
+    const store = createMockStore();
+    store.dispatch(addUserAction(mockUser));
+
     render(
       <Provider store={store}>
         <MemoryRouter initialEntries={[AppRoute.Root]}>
@@ -151,12 +145,13 @@ describe('Component: Header', () => {
     );
 
     expect(screen.queryByText(/Main Page/i)).toBeInTheDocument();
-    fireEvent.click(screen.getByText(authState.userInfo.user!.username));
+    fireEvent.click(screen.getByText(mockUser.username));
     expect(screen.queryByText(/Profile Page/i)).toBeInTheDocument();
   });
 
-  test('should require logout action when logout button is clicked', () => {
-    const store = mockStore(authState);
+  test('should remove user info and rerender header when logout button is clicked', async () => {
+    const store = createMockStore();
+    store.dispatch(addUserAction(mockUser));
 
     render(
       <Provider store={store}>
@@ -165,8 +160,9 @@ describe('Component: Header', () => {
         </MemoryRouter>
       </Provider>
     );
-    expect(store.getActions()).toStrictEqual([]);
     fireEvent.click(screen.getByText(/Log out/i));
-    expect(store.getActions()[0]).toStrictEqual(removeUserAction());
+    expect(screen.getByText(/sign in/i)).toBeInTheDocument();
+    expect(screen.getByText(/sign up/i)).toBeInTheDocument();
+    expect(store.getState().userInfo.user).toBeNull();
   });
 });

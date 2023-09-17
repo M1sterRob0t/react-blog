@@ -3,11 +3,8 @@
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
-import { act } from 'react-dom/test-utils';
 
 import { server } from './mock/mockServiceWorker';
-import { store } from './state/store';
-import { removeUserAction } from './state/userReducer';
 
 global.matchMedia =
   global.matchMedia ||
@@ -27,10 +24,6 @@ beforeAll(() => {
 afterEach(() => {
   // Очистите все запросы между тестами
   server.resetHandlers();
-  // Возвращаем стор в исходное состояние между тестами
-  act(() => {
-    store.dispatch(removeUserAction());
-  });
 });
 
 afterAll(() => {

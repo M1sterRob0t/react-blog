@@ -3,7 +3,7 @@ import { Provider } from 'react-redux';
 import { Routes, Route, MemoryRouter } from 'react-router-dom';
 
 import { AppRoute, POSTS_PER_PAGE } from '../../../constants';
-import { store } from '../../../state/store';
+import { createMockStore } from '../../../mock/createMockStore';
 import { mockArticlesResponse } from '../../../mock/mockArticles';
 
 import PostsList from './PostsList';
@@ -12,6 +12,8 @@ const mockArticles = mockArticlesResponse.articles.slice(0, POSTS_PER_PAGE);
 
 describe('Component: PostsList', () => {
   test('Should render correctly', () => {
+    const store = createMockStore();
+
     render(
       <Provider store={store}>
         <MemoryRouter initialEntries={[AppRoute.Root]}>
