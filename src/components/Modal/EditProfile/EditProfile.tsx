@@ -32,11 +32,11 @@ type TEditFormData = {
 };
 
 interface IEditProfileProps {
-  className: string;
+  className?: string;
 }
 
 function EditProfile(props: IEditProfileProps): JSX.Element {
-  const { className } = props;
+  const { className = '' } = props;
   const user = useAppSelector((state) => state.userInfo.user);
   const dispatch = useAppDispatch();
   const [updateUser, { isLoading, isSuccess, isError, error, data }] = usePutUpdatedUserMutation();

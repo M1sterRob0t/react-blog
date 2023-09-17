@@ -1,6 +1,7 @@
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 
+import type { TUserEditRequest, TUserResponse } from '../types/users';
 import type { TArticleResponse, TNewArticleRequest } from '../types/articles';
 import { AppRoute, BASE_URL } from '../constants';
 
@@ -86,6 +87,21 @@ const handlers = [
       ...mockArticlesResponse.articles.slice(index + 1),
     ];
     return res(ctx.status(200), ctx.json(newArticleResponse));
+  }),
+  rest.put(`${BASE_URL}/user`, async (req, res, ctx) => {
+    const userEditRequest: TUserEditRequest = await req.json();
+    const user = userEditRequest.user;
+    const userResponse: TUserResponse = {
+      user: {
+        email: user.email || mockUser.email,
+        token: mockUser.token,
+        username: user.username || mockUser.username,
+        bio: mockUser.bio,
+        image: user.image || mockUser.username,
+      },
+    };
+
+    return res(ctx.status(200), ctx.json(userResponse));
   }),
 ];
 
