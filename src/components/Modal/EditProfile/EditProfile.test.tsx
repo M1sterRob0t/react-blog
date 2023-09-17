@@ -8,7 +8,7 @@ import { ToastContainer } from 'react-toastify';
 import { AppRoute } from '../../../constants';
 import { createMockStore } from '../../../mock/createMockStore';
 import { addUserAction } from '../../../state/userReducer';
-import { mockUser } from '../../../mock/mockUser';
+import { mockTakenUsername, mockUser } from '../../../mock/mockUser';
 
 import EditProfile from './EditProfile';
 
@@ -80,5 +80,30 @@ describe('Component: EditProfile', () => {
     expect(await screen.findByText(/successfully updated/i)).toBeInTheDocument();
     expect(await screen.findByText(/Root Page/i)).toBeInTheDocument();
     expect(store.getState().userInfo.user?.username).toBe('new user name');
+  });
+
+  test('Should show error popup when server respond with an error', async () => {
+    const store = createMockStore();
+    store.dispatch(addUserAction(mockUser));
+
+    render(
+      <Provider store={store}>
+        <MemoryRouter initialEntries={[AppRoute.Profile]}>
+          <Routes>
+            <Route path={AppRoute.Profile} element={<EditProfile />} />
+            <Route path={AppRoute.Articles} element={<h1>This is Root Page</h1>} />
+          </Routes>
+          <ToastContainer />
+        </MemoryRouter>
+      </Provider>
+    );
+    await act(async () => {
+      await userEvent.clear(screen.getByPlaceholderText(/username/i));
+      await userEvent.type(screen.getByPlaceholderText(/username/i), mockTakenUsername);
+      await userEvent.click(screen.getByText(/save/i));
+    });
+    expect(await screen.findByText(/Edit Profile/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Username is already taken/i)).toBeInTheDocument();
+    expect(store.getState().userInfo.user).toBe(mockUser);
   });
 });

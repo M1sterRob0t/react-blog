@@ -77,7 +77,7 @@ describe('Component: SignIn', () => {
     expect(store.getState().userInfo.user).not.toBe(null);
   });
 
-  test('Should show error popap and redirect when user send incorrect data', async () => {
+  test('Should show error popap when user send incorrect data', async () => {
     const store = createMockStore();
 
     render(

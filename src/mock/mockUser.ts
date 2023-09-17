@@ -9,3 +9,4 @@ export const mockUser: TUserInfo = {
 };
 
 export const mockUserPassword = 'qwerty';
+export const mockTakenUsername = 'FoxTrader';

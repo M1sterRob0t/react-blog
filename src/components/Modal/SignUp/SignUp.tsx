@@ -35,11 +35,11 @@ type TSignUpFormData = {
 };
 
 interface ISignUpProps {
-  className: string;
+  className?: string;
 }
 
 function SignUp(props: ISignUpProps): JSX.Element {
-  const { className } = props;
+  const { className = '' } = props;
   const [postNewUser, { error, isError, isSuccess, isLoading, data }] = usePostNewUserMutation();
   const serverError = processServerError(error);
   const dispatch = useAppDispatch();
@@ -69,7 +69,7 @@ function SignUp(props: ISignUpProps): JSX.Element {
 
   if (isLoading) return <Spinner />;
 
-  if (isSuccess) return <Navigate to={AppRoute.Articles} />;
+  if (isSuccess) return <Navigate to={AppRoute.Root} />;
 
   if (isError) {
     if (isFetchBaseQueryError(error) && error.status !== 422) {
@@ -159,6 +159,7 @@ function SignUp(props: ISignUpProps): JSX.Element {
             }}
             render={({ field }) => (
               <Input
+                data-testid="password"
                 className={`modal__input ${errors.password || serverError.password ? INPUT_INVALID_CLASS : ''}`}
                 placeholder="Password"
                 type="password"
@@ -184,6 +185,7 @@ function SignUp(props: ISignUpProps): JSX.Element {
             }}
             render={({ field }) => (
               <Input
+                data-testid="repeat-password"
                 className={`modal__input ${errors.repeatedPassword || serverError.password ? INPUT_INVALID_CLASS : ''}`}
                 placeholder="Password"
                 type="password"
@@ -206,7 +208,7 @@ function SignUp(props: ISignUpProps): JSX.Element {
           />
           <span>I agree to the processing of my personal information</span>
         </label>
-        <Button className="modal__submit" type="primary" htmlType="submit">
+        <Button className="modal__submit" type="primary" htmlType="submit" name="create" data-testid="create">
           Create
         </Button>
       </form>

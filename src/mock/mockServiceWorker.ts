@@ -1,12 +1,12 @@
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 
-import type { TUserEditRequest, TUserLoginRequest, TUserResponse } from '../types/users';
+import type { TNewUserRequest, TUserEditRequest, TUserLoginRequest, TUserResponse } from '../types/users';
 import type { TArticleResponse, TNewArticleRequest } from '../types/articles';
 import { AppRoute, BASE_URL, Endpoint } from '../constants';
 
 import { mockArticlesResponse } from './mockArticles';
-import { mockUser, mockUserPassword } from './mockUser';
+import { mockTakenUsername, mockUser, mockUserPassword } from './mockUser';
 
 const handlers = [
   rest.get(`${BASE_URL}${AppRoute.Articles}`, (req, res, ctx) => {
@@ -100,6 +100,9 @@ const handlers = [
         image: user.image || mockUser.username,
       },
     };
+    if (user.username === mockTakenUsername) {
+      return res(ctx.status(422), ctx.json({ errors: { username: 'is already taken.' } }));
+    }
 
     return res(ctx.status(200), ctx.json(userResponse));
   }),
@@ -112,6 +115,25 @@ const handlers = [
     }
 
     return res(ctx.status(422), ctx.json({ message: 'Email or password is incorrect.' }));
+  }),
+  rest.post(`${BASE_URL}/${Endpoint.Users}`, async (req, res, ctx) => {
+    const newUserRequest: TNewUserRequest = await req.json();
+    const user = newUserRequest.user;
+    const userResponse: TUserResponse = {
+      user: {
+        email: user.email,
+        token: 'Basic aj@kd1#2!3as@d0adjashalb=312=020k-09-3423984=-asd',
+        username: user.username,
+        bio: '',
+        image: null,
+      },
+    };
+    if (user.username === mockUser.username) {
+      return res(ctx.status(422), ctx.json({ errors: { username: 'is already taken.' } }));
+    } else if (user.email === mockUser.email) {
+      return res(ctx.status(422), ctx.json({ errors: { email: 'is already taken.' } }));
+    }
+    return res(ctx.status(200), ctx.json(userResponse));
   }),
 ];
 
