@@ -1,16 +1,9 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
+import { BASE_URL, POSTS_PER_PAGE, Endpoint } from '../constants';
+import type { TNewUserRequest, TUserResponse, TUserLoginRequest, TUserEditRequest } from '../types/users';
 import type { TArticleResponse, TArticlesSuccessResponse, TNewArticleRequest } from '../types/articles';
-import { BASE_URL, POSTS_PER_PAGE } from '../constants';
-import { TNewUserRequest, TUserResponse, TUserLoginRequest, TUserEditRequest } from '../types/users';
 import type { TRootState } from '../state/store';
-
-enum Endpoint {
-  Articles = 'articles',
-  Users = 'users',
-  Login = 'users/login',
-  User = 'user',
-}
 
 export const api = createApi({
   reducerPath: 'api',

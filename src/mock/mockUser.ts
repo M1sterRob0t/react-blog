@@ -7,3 +7,5 @@ export const mockUser: TUserInfo = {
   bio: 'cybersecurity engeneer',
   token: 'G2MkcB03q*9Qn68vjl2r#QqP8DEHDjDIOLlzMB0y',
 };
+
+export const mockUserPassword = 'qwerty';

@@ -29,11 +29,11 @@ type TSignInFormData = {
 };
 
 interface ISignInProps {
-  className: string;
+  className?: string;
 }
 
 function SignIn(props: ISignInProps): JSX.Element {
-  const { className } = props;
+  const { className = '' } = props;
   const [requireLogin, { isLoading, isSuccess, isError, error, data }] = usePostExistingUserMutation();
   const dispatch = useAppDispatch();
   const {
@@ -51,7 +51,7 @@ function SignIn(props: ISignInProps): JSX.Element {
 
   if (isLoading) return <Spinner />;
 
-  if (isSuccess) return <Navigate to={AppRoute.Articles} />;
+  if (isSuccess) return <Navigate to={AppRoute.Root} />;
 
   if (isError && error) {
     if ('status' in error && error.status === 422) {

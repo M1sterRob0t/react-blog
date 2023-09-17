@@ -1,12 +1,12 @@
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 
-import type { TUserEditRequest, TUserResponse } from '../types/users';
+import type { TUserEditRequest, TUserLoginRequest, TUserResponse } from '../types/users';
 import type { TArticleResponse, TNewArticleRequest } from '../types/articles';
-import { AppRoute, BASE_URL } from '../constants';
+import { AppRoute, BASE_URL, Endpoint } from '../constants';
 
 import { mockArticlesResponse } from './mockArticles';
-import { mockUser } from './mockUser';
+import { mockUser, mockUserPassword } from './mockUser';
 
 const handlers = [
   rest.get(`${BASE_URL}${AppRoute.Articles}`, (req, res, ctx) => {
@@ -88,7 +88,7 @@ const handlers = [
     ];
     return res(ctx.status(200), ctx.json(newArticleResponse));
   }),
-  rest.put(`${BASE_URL}/user`, async (req, res, ctx) => {
+  rest.put(`${BASE_URL}/${Endpoint.User}`, async (req, res, ctx) => {
     const userEditRequest: TUserEditRequest = await req.json();
     const user = userEditRequest.user;
     const userResponse: TUserResponse = {
@@ -102,6 +102,16 @@ const handlers = [
     };
 
     return res(ctx.status(200), ctx.json(userResponse));
+  }),
+  rest.post(`${BASE_URL}/${Endpoint.Login}`, async (req, res, ctx) => {
+    const userLoginRequest: TUserLoginRequest = await req.json();
+    const user = userLoginRequest.user;
+
+    if (user.email === mockUser.email && user.password === mockUserPassword) {
+      return res(ctx.status(200), ctx.json(mockUser));
+    }
+
+    return res(ctx.status(422), ctx.json({ message: 'Email or password is incorrect.' }));
   }),
 ];
 
