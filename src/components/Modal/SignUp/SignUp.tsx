@@ -2,13 +2,14 @@ import { FormEvent, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Input, Typography, Button } from 'antd';
 
-import { postNewUser } from '../../../state/api-actions';
+import { postNewUser } from '../../../state/reducers/user/api-actions';
 import type { TNewUser, TNewUserRequest } from '../../../types/users';
 import { useAppDispatch, useAppSelector } from '../../../hooks/hooks';
 import '../style.css';
 import { AppRoute, INPUT_INVALID_CLASS } from '../../../constants';
 import { withLoading } from '../../../hocs/withLoading';
 import { withRedirect } from '../../../hocs/withRedirect';
+import { selectUserServerError } from '../../../state/selectors';
 
 const SignUpForm = {
   Username: 'username',
@@ -32,7 +33,7 @@ const { Title } = Typography;
 function SignUp(props: ISignUpProps): JSX.Element {
   const { className } = props;
   const dispatch = useAppDispatch();
-  const error = useAppSelector((state) => state.blog.serverError);
+  const error = useAppSelector(selectUserServerError);
   const [formInfo, setFormInfo] = useState(formInfoDefault);
 
   function formSubmitHandler(evt: FormEvent<HTMLFormElement>): void {

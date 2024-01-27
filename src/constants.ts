@@ -49,3 +49,11 @@ export const warningToastConfig = {
 } as const;
 
 export const INPUT_INVALID_CLASS = 'modal__input--invalid';
+
+export const BASE_URL = 'https://blog.kata.academy/api';
+export enum Endpoint {
+  Articles = '/articles',
+  Users = '/users',
+  Login = '/users/login',
+  User = '/user',
+}

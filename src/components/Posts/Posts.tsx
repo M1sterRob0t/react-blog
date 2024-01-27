@@ -3,15 +3,16 @@ import { Pagination } from 'antd';
 
 import { POSTS_PER_PAGE, MAX_POSTS } from '../../constants';
 import { useAppDispatch, useAppSelector } from '../../hooks/hooks';
-import { fetchArticles } from '../../state/api-actions';
+import { fetchArticles } from '../../state/reducers/articles/api-actions';
 import Error from '../Error';
+import { selectArticles, selectArticlesErrorStatus } from '../../state/selectors';
 
 import PostsList from './PostsList/PostsList';
 import './style.css';
 
 function Posts(): JSX.Element {
-  const articles = useAppSelector((state) => state.blog.articles);
-  const isError = useAppSelector((state) => state.blog.isError);
+  const articles = useAppSelector(selectArticles);
+  const isError = useAppSelector(selectArticlesErrorStatus);
   const dispatch = useAppDispatch();
 
   useEffect(() => {

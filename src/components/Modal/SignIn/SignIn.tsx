@@ -4,7 +4,7 @@ import '../style.css';
 import { Input, Typography, Button } from 'antd';
 
 import { TUserLoginRequest } from '../../../types/users';
-import { requireLogin } from '../../../state/api-actions';
+import { requireLogin } from '../../../state/reducers/user/api-actions';
 import { useAppDispatch } from '../../../hooks/hooks';
 import { AppRoute } from '../../../constants';
 import { withLoading } from '../../../hocs/withLoading';

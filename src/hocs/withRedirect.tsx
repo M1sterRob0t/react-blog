@@ -2,14 +2,16 @@ import { Navigate, useLocation, useParams } from 'react-router-dom';
 
 import { useAppSelector } from '../hooks/hooks';
 import { AppRoute } from '../constants';
+import { selectArticlesUpdateStatus, selectUser } from '../state/selectors';
 
 export function withRedirect<TProps extends JSX.IntrinsicAttributes>(
   Component: React.ComponentType<TProps>
 ): React.FC<TProps> {
   return function WithRedirectComponent(props: TProps) {
-    const user = useAppSelector((state) => state.blog.user);
-    const isUpdated = useAppSelector((state) => state.blog.isUpdated);
+    const user = useAppSelector(selectUser);
+    const isUpdated = useAppSelector(selectArticlesUpdateStatus);
     const isAuthorized = user ? true : false;
+
     const { pathname } = useLocation();
     const { name } = useParams();
     const appRouteEditArticle = `${AppRoute.Articles}/${name}/edit`;

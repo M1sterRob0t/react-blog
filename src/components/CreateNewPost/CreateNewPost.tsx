@@ -4,10 +4,11 @@ import { Input, Typography, Button } from 'antd';
 import './style.css';
 
 import { useAppDispatch, useAppSelector } from '../../hooks/hooks';
-import { postNewArticle, updateUserArticle, fetchArticle } from '../../state/api-actions';
+import { postNewArticle, updateUserArticle, fetchArticle } from '../../state/reducers/articles/api-actions';
 import { TNewArticleRequest } from '../../types/articles';
 import { withLoading } from '../../hocs/withLoading';
 import { withRedirect } from '../../hocs/withRedirect';
+import { selectArticle } from '../../state/selectors';
 
 const { Title } = Typography;
 
@@ -19,8 +20,7 @@ interface ICreateNewPostProps {
 function CreateNewPost(props: ICreateNewPostProps): JSX.Element {
   const { className, edit: isEdit } = props;
   const dispatch = useAppDispatch();
-  const article = useAppSelector((state) => state.blog.article);
-
+  const article = useAppSelector(selectArticle);
   const [title, setTitle] = useState(isEdit && article ? article.title : '');
   const [description, setDescription] = useState(isEdit && article ? article.description : '');
   const [body, setBody] = useState(isEdit && article ? article.body : '');

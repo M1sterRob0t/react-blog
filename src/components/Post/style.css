@@ -112,6 +112,7 @@
 .post__likes-count {
   margin-top: 2px;
   font-size: 12px;
+  user-select: none;
 }
 
 .post__likes-icon {

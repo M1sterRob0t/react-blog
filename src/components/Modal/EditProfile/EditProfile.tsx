@@ -4,12 +4,13 @@ import { toast } from 'react-toastify';
 
 import { successToastConfig, INPUT_INVALID_CLASS } from '../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks/hooks';
-import { postUpdatedUser } from '../../../state/api-actions';
+import { postUpdatedUser } from '../../../state/reducers/user/api-actions';
 import { TUserEditRequest } from '../../../types/users';
 import '../style.css';
-import { clearErrorAction } from '../../../state/reducer';
+import { clearErrorAction } from '../../../state/reducers/user/userReducer';
 import { withLoading } from '../../../hocs/withLoading';
 import { withRedirect } from '../../../hocs/withRedirect';
+import { selectUser, selectUserServerError } from '../../../state/selectors';
 
 const EditForm = {
   Username: 'username',
@@ -27,8 +28,8 @@ function EditProfile(props: IEditProfileProps): JSX.Element {
   const { className } = props;
   const dispatch = useAppDispatch();
 
-  const user = useAppSelector((state) => state.blog.user);
-  const error = useAppSelector((state) => state.blog.serverError);
+  const user = useAppSelector(selectUser);
+  const error = useAppSelector(selectUserServerError);
 
   const editFormDefault = {
     username: user?.username,

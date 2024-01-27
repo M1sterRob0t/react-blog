@@ -4,7 +4,9 @@ import { Button } from 'antd';
 
 import { AppRoute } from '../../constants';
 import { useAppDispatch, useAppSelector } from '../../hooks/hooks';
-import { logoutAction, clearArticleAction } from '../../state/reducer';
+import { logoutAction } from '../../state/reducers/user/userReducer';
+import { clearArticleAction } from '../../state/reducers/articles/articlesReducer';
+import { selectUser } from '../../state/selectors';
 
 import defaultAvatar from './images/default-avatar.png';
 
@@ -14,7 +16,7 @@ interface IHeaderProps {
 
 export default function Header(props: IHeaderProps): JSX.Element {
   const { className } = props;
-  const user = useAppSelector((state) => state.blog.user);
+  const user = useAppSelector(selectUser);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 

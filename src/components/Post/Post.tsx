@@ -8,7 +8,8 @@ import { AppRoute } from '../../constants';
 import type { TArticle } from '../../types/articles';
 import './style.css';
 import { useAppDispatch, useAppSelector } from '../../hooks/hooks';
-import { deleteLikeFromArticle, deleteUserArticle, postLikeToArticle } from '../../state/api-actions';
+import { deleteLikeFromArticle, deleteUserArticle, postLikeToArticle } from '../../state/reducers/articles/api-actions';
+import { selectUser } from '../../state/selectors';
 
 const DATE_FROMAT = 'MMMM 	d, yyy';
 
@@ -21,7 +22,7 @@ interface IPostProps {
 export default function Post(props: IPostProps) {
   const { full, fromUser, article } = props;
   const dispatch = useAppDispatch();
-  const user = useAppSelector((state) => state.blog.user);
+  const user = useAppSelector(selectUser);
   const date = format(new Date(article.createdAt), DATE_FROMAT);
 
   function deleteButtonConfirmHandler(): void {
@@ -88,7 +89,7 @@ export default function Post(props: IPostProps) {
       <div className="post__desc">
         <div className="post__tegs-list">
           {article.tagList.map((tag) => (
-            <Tag className="post__tegs-item" key={tag.toLowerCase()}>
+            <Tag className="post__tegs-item" key={tag}>
               {tag}
             </Tag>
           ))}
